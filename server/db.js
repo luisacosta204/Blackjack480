@@ -1,14 +1,22 @@
+// server/db.js
 import pkg from 'pg';
 const { Pool } = pkg;
 
-// Some hosted Postgres (like Supabase) needs SSL in Node.
-// This enables SSL automatically if the host looks like Supabase.
-const ssl =
-  process.env.DATABASE_URL?.includes('supabase.co')
-    ? { rejectUnauthorized: false }
-    : false;
+const connectionString = process.env.DATABASE_URL; // render env
 
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl
+  connectionString,
+  // Required when connecting to Supabase from Render/other hosts
+  ssl: { rejectUnauthorized: false },
+  // Optional tuning for pooled connections
+  max: 10,
+  idleTimeoutMillis: 30_000,
+  connectionTimeoutMillis: 10_000,
+});
+
+// Optional: quick startup check (prints to Render logs)
+pool.query('select 1').then(() => {
+  console.log('DB connection OK');
+}).catch(err => {
+  console.error('DB connection FAILED:', err.message);
 });
