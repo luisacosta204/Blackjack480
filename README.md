@@ -119,4 +119,3 @@ Project developed for CIT 480 (Software Development / DevOps)
 Instructor: [Professor’s Name]
 Semester: Fall 2025 – Spring 2026
 
-<img width="468" height="627" alt="image" src="https://github.com/user-attachments/assets/06a76617-2f73-43e7-8687-2b7a0d06e2d2" />
