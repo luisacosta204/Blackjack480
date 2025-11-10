@@ -30,22 +30,24 @@ async function ensureSchema() {
 ensureSchema();
 
 // ----- CORS -----
-const corsOrigins = (process.env.CORS_ORIGINS || '')
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean);
+const raw = process.env.CORS_ORIGINS || '';
+const allowed = new Set(raw.split(',').map(s => s.trim()).filter(Boolean));
+const allowAll = allowed.has('*') || allowed.size === 0;
 
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      // allow non-browser tools (curl/Postman) and same-origin
-      if (!origin || corsOrigins.length === 0 || corsOrigins.includes(origin)) return cb(null, true);
-      return cb(new Error(`CORS: ${origin} not allowed`), false);
-    },
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || allowAll || allowed.has(origin)) return cb(null, true);
+    return cb(new Error(`CORS: ${origin} not allowed`), false);
+  },
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  optionsSuccessStatus: 204,
+}));
 
+app.options('*', cors());
+
+// ✅ add this back
 app.use(express.json());
 
 // ----- Helpers -----
@@ -148,3 +150,4 @@ app.get('/api/me', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API listening on http://localhost:${PORT}`));
+
