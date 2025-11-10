@@ -1,3 +1,5 @@
+import GameStub from './GameStub';
+import Leaderboard from './Leaderboard';
 import { useState, useEffect } from 'react';
 import { login, register, me, logout } from './api/auth';
 
