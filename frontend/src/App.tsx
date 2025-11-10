@@ -1,10 +1,10 @@
-import GameStub from './GameStub';
-import Leaderboard from './Leaderboard';
 import { useState, useEffect } from 'react';
 import { login, register, me, logout } from './api/auth';
+import GameStub from './GameStub';
+import Leaderboard from './Leaderboard';
 
 export default function App() {
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [mode, setMode] = useState<'login' | 'register' | 'game' | 'leaderboard'>('login');
   const [identifier, setIdentifier] = useState(''); // email or username (for login)
   const [username, setUsername] = useState('');     // for register
   const [email, setEmail] = useState('');           // for register
@@ -50,19 +50,21 @@ export default function App() {
     }
   }
 
+  // Logged-in screen
   if (user) {
     return (
       <div style={styles.shell}>
         <h1>Welcome 🎉</h1>
         <p>Logged in as <b>{user.username}</b></p>
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-          <a href="/game" onClick={(e) => e.preventDefault()}>
-            Game (coming soon)
-          </a>
-          <a href="/leaderboard" onClick={(e) => e.preventDefault()}>
-            Leaderboard (coming soon)
-          </a>
+
+        <div style={{display:'flex', gap:12, justifyContent:'center', marginTop:8}}>
+          <a href="#game" onClick={(e)=>{e.preventDefault(); setMode('game');}}>Game</a>
+          <a href="#leaderboard" onClick={(e)=>{e.preventDefault(); setMode('leaderboard');}}>Leaderboard</a>
         </div>
+
+        {(mode === 'game') && <GameStub />}
+        {(mode === 'leaderboard') && <Leaderboard />}
+
         <button style={styles.btn} onClick={() => { logout(); setUser(null); }}>
           Log out
         </button>
@@ -70,38 +72,33 @@ export default function App() {
     );
   }
 
+  // Login/Register screen
   return (
     <div style={styles.shell}>
       <h1>Blackjack 21</h1>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 12, justifyContent: 'center' }}>
-        <button
-          style={mode === 'login' ? styles.btnPrimary : styles.btn}
-          onClick={() => setMode('login')}
-        >
+      <div style={{display:'flex', gap:8, marginBottom:12, justifyContent:'center'}}>
+        <button style={mode==='login'?styles.btnPrimary:styles.btn} onClick={()=>setMode('login')}>
           Sign In
         </button>
-        <button
-          style={mode === 'register' ? styles.btnPrimary : styles.btn}
-          onClick={() => setMode('register')}
-        >
+        <button style={mode==='register'?styles.btnPrimary:styles.btn} onClick={()=>setMode('register')}>
           Create Account
         </button>
       </div>
 
-      {mode === 'login' ? (
+      {mode==='login' ? (
         <form onSubmit={onLogin} style={styles.card}>
           <input
             style={styles.input}
             placeholder="email or username"
             value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            onChange={e=>setIdentifier(e.target.value)}
           />
           <input
             style={styles.input}
             type="password"
             placeholder="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e=>setPassword(e.target.value)}
           />
           <button style={styles.btnPrimary} type="submit">
             Sign In
@@ -113,20 +110,20 @@ export default function App() {
             style={styles.input}
             placeholder="username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={e=>setUsername(e.target.value)}
           />
           <input
             style={styles.input}
             placeholder="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e=>setEmail(e.target.value)}
           />
           <input
             style={styles.input}
             type="password"
             placeholder="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e=>setPassword(e.target.value)}
           />
           <button style={styles.btnPrimary} type="submit">
             Create Account
@@ -141,42 +138,42 @@ export default function App() {
 
 const styles: Record<string, React.CSSProperties> = {
   shell: {
-    maxWidth: 420,
+    maxWidth: 720,
     margin: '64px auto',
     fontFamily: 'system-ui, sans-serif',
     color: '#eee',
-    textAlign: 'center',
+    textAlign:'center'
   },
   card: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 10,
-    background: '#1e1e1e',
-    padding: 16,
-    borderRadius: 12,
+    display:'flex',
+    flexDirection:'column',
+    gap:10,
+    background:'#1e1e1e',
+    padding:16,
+    borderRadius:12
   },
   input: {
-    padding: '10px 12px',
-    borderRadius: 8,
-    border: '1px solid #333',
-    background: '#111',
-    color: '#eee',
+    padding:'10px 12px',
+    borderRadius:8,
+    border:'1px solid #333',
+    background:'#111',
+    color:'#eee'
   },
   btn: {
-    padding: '10px 12px',
-    borderRadius: 8,
-    border: '1px solid #333',
-    background: '#222',
-    color: '#eee',
-    cursor: 'pointer',
+    padding:'10px 12px',
+    borderRadius:8,
+    border:'1px solid #333',
+    background:'#222',
+    color:'#eee',
+    cursor:'pointer'
   },
   btnPrimary: {
-    padding: '10px 12px',
-    borderRadius: 8,
-    border: 'none',
-    background: '#22c55e',
-    color: '#0a0a0a',
-    cursor: 'pointer',
-    fontWeight: 700,
-  },
+    padding:'10px 12px',
+    borderRadius:8,
+    border:'none',
+    background:'#22c55e',
+    color:'#0a0a0a',
+    cursor:'pointer',
+    fontWeight:700
+  }
 };
