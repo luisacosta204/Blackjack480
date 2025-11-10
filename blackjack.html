@@ -9,33 +9,27 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Your global stylesheet (from project) -->
     <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/header-user.css">
+
     <!-- Page-specific styles -->
     <link rel="stylesheet" href="blackjack/blackjack.css?v=dev1">
     <script src="blackjack/blackjack.js?v=dev1" defer></script>
-
 </head>
 <body>
     <header class="header">
-        <div class="left logo">
-            <div class="chip">21</div>
-            <h1 class="logo-title">Blackjack</h1>
+        <div class="left user-info">
+            <img id="headerAvatar" src="assets/avatars/1.png" alt="User avatar">
+            <span id="headerUsername" class="username"></span>
         </div>
 
         <div class="right cluster">
             <button id="backButton" class="back-button btn-secondary btn">⮐ Back to Home</button>
-
             <label for="deckSelect" class="muted">Deck:</label>
             <select id="deckSelect" class="select"></select>
-
             <span class="badge" id="bankBadge" title="Your chip balance"></span>
         </div>
-
     </header>
-
-
-
 
     <main class="container stack">
         <section class="panel">
@@ -108,7 +102,6 @@
                     <button class="btn-secondary btn" id="insuranceBtn" disabled>Take Insurance</button>
                     <button class="btn-secondary btn" id="changeDeckBtn" title="Switch card style">Change Deck</button>
                     <button class="btn-danger btn" id="resetBankBtn" title="Reset bank to 500">Reset Bank</button>
-
                 </div>
                 <p class="panel-subtle mt-2">
                     <span class="muted">Shoe:</span> <span id="shoeInfo">—</span>
@@ -116,13 +109,26 @@
                     <strong id="countInfo">—</strong>
                     <span class="muted"> (</span><strong id="countLabel">Neutral</strong><span class="muted">)</span>
                 </p>
-
             </div>
         </section>
     </main>
 
-
     <footer class="footer">© Blackjack 21</footer>
 
+    <script>
+      (function () {
+        const avatar = document.getElementById('headerAvatar');
+        const usernameEl = document.getElementById('headerUsername');
+        const storedName = localStorage.getItem('bj21.username');
+        const storedAvatar = localStorage.getItem('bj21.avatar');
+        const username = storedName || `Guest_${Math.floor(1000 + Math.random() * 9000)}`;
+        usernameEl.textContent = username;
+        localStorage.setItem('bj21.username', username);
+        if (storedAvatar) avatar.src = storedAvatar;
+        window.addEventListener('storage', (e) => {
+          if (e.key === 'bj21.avatar' && e.newValue) { avatar.src = e.newValue; }
+        });
+      })();
+    </script>
 </body>
 </html>
