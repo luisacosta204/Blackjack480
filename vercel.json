@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "^/login$",
+      "methods": [ "POST" ],
+      "dest": "/api/login.ts"
+    },
+    {
+      "src": "^/register$",
+      "methods": [ "POST" ],
+      "dest": "/api/register.ts"
+    },
+    {
+      "src": "^/me$",
+      "methods": [ "GET" ],
+      "dest": "/api/me.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
