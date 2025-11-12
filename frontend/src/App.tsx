@@ -54,7 +54,7 @@ export default function App() {
   if (user) {
     return (
       <div style={styles.shell}>
-        <h1>Welcome 🎉</h1>
+        <h1>Welcome</h1>
         <p>Logged in as <b>{user.username}</b></p>
 
         <div style={{display:'flex', gap:12, justifyContent:'center', marginTop:8}}>
