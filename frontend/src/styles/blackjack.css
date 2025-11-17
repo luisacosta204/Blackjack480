@@ -496,3 +496,52 @@ main.container.stack > .grid.cols-2 .panel-header {
 /* Polishing: keep panel content clipped when needed, normalize helper text wrapping */
 .panel { overflow: hidden; }
 .panel-subtle { white-space: normal; line-height: 1.35; }
+
+/* >>> NEW: Make chip row perfectly aligned and match "Clear" height */
+.cluster.chip-row {
+    display: flex;
+    align-items: center; /* center vertically */
+    gap: 12px;
+}
+
+.cluster.chip-row .chip-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* "Clear" button same height as chips */
+#clearBetBtn.btn {
+    height: 52px;
+    padding: 0 16px;
+    border-radius: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* >>> NEW: Avatar + username alignment in game header */
+.header .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#headerAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    border: 1px solid rgba(255,255,255,.15);
+}
+
+#headerUsername.username {
+    font-weight: 700;
+    white-space: nowrap;
+}
