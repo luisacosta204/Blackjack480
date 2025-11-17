@@ -58,6 +58,7 @@ export default function App() {
   if (mode === 'home') {
     return (
       <Home
+        user={user}                                 {/* <-- pass user here */}
         onPlayBlackjack={() => setMode('blackjack')}
         onViewLeaderboard={() => setMode('leaderboard')}
         onViewProfile={() => { /* optional later */ }}
