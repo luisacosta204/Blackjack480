@@ -52,7 +52,7 @@ export default function App() {
         user={user}
         onPlayBlackjack={() => setMode('blackjack')}
         onViewLeaderboard={() => setMode('leaderboard')}
-        onViewProfile={() => { /* optional later */ }}
+        onViewProfile={() => {}}
       />
     );
   }
@@ -66,7 +66,7 @@ export default function App() {
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16}}>
         <div>
           <h1 style={{margin:'0 0 6px'}}>Leaderboard</h1>
-          <div>Logged in as <b>{user?.username ?? user?.email ?? 'player'}</b></div>
+        <div>Logged in as <b>{user?.username ?? user?.email ?? 'player'}</b></div>
         </div>
         <div style={{display:'flex', gap:8}}>
           <button style={styles.btn} onClick={() => setMode('home')}>Back to Home</button>
