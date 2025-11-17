@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { me, logout } from './api/auth';
-import GameStub from './GameStub';
 import Leaderboard from './Leaderboard';
 import LoginPage from './pages/Login';
+import Home from './pages/Home';
+import Blackjack from './pages/Blackjack';
 
 type User = {
   id: number | string;
@@ -11,16 +12,17 @@ type User = {
 };
 
 export default function App() {
-  const [checked, setChecked] = useState(false);               // have we checked auth yet?
-  const [authed, setAuthed] = useState(false);                 // logged-in?
-  const [user, setUser] = useState<User | null>(null);         // current user
-  const [mode, setMode] = useState<'game' | 'leaderboard'>('game');
+  const [checked, setChecked] = useState(false); // have we checked auth yet?
+  const [authed, setAuthed] = useState(false);   // logged-in?
+  const [user, setUser] = useState<User | null>(null);
+  const [mode, setMode] = useState<'home' | 'blackjack' | 'leaderboard'>('home');
 
   async function refreshMe() {
     try {
       const u = await me();
       setUser(u as User);
       setAuthed(true);
+      setMode('home'); // land on Home after auth
     } catch {
       setUser(null);
       setAuthed(false);
@@ -29,15 +31,13 @@ export default function App() {
     }
   }
 
-  useEffect(() => {
-    refreshMe();
-  }, []);
+  useEffect(() => { refreshMe(); }, []);
 
   function handleLogout() {
     logout();
     setUser(null);
     setAuthed(false);
-    setMode('game');
+    setMode('home');
   }
 
   // While we don't know auth state yet, render nothing (or a spinner if you want)
@@ -48,41 +48,52 @@ export default function App() {
     return (
       <LoginPage
         onAuthed={async () => {
-          // After successful login/register, fetch the user and proceed
           await refreshMe();
         }}
       />
     );
   }
 
-  // Authenticated -> show your app views
+  // Authenticated -> show app views
+  if (mode === 'home') {
+    return (
+      <Home
+        onPlayBlackjack={() => setMode('blackjack')}
+        onViewLeaderboard={() => setMode('leaderboard')}
+        onViewProfile={() => { /* optional later */ }}
+      />
+    );
+  }
+
+  if (mode === 'blackjack') {
+    return <Blackjack onBack={() => setMode('home')} />;
+  }
+
+  // mode === 'leaderboard'
   return (
     <div style={styles.shell}>
-      <h1>Welcome</h1>
-      <p>Logged in as <b>{user?.username ?? user?.email ?? 'player'}</b></p>
-
-      <div style={{display:'flex', gap:12, justifyContent:'center', marginTop:8}}>
-        <a href="#game" onClick={(e)=>{e.preventDefault(); setMode('game');}}>Game</a>
-        <a href="#leaderboard" onClick={(e)=>{e.preventDefault(); setMode('leaderboard');}}>Leaderboard</a>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16}}>
+        <div>
+          <h1 style={{margin:'0 0 6px'}}>Leaderboard</h1>
+          <div>Logged in as <b>{user?.username ?? user?.email ?? 'player'}</b></div>
+        </div>
+        <div style={{display:'flex', gap:8}}>
+          <button style={styles.btn} onClick={() => setMode('home')}>Back to Home</button>
+          <button style={styles.btn} onClick={handleLogout}>Log out</button>
+        </div>
       </div>
-
-      {mode === 'game' && <GameStub />}
-      {mode === 'leaderboard' && <Leaderboard />}
-
-      <button style={styles.btn} onClick={handleLogout}>
-        Log out
-      </button>
+      <Leaderboard />
     </div>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
   shell: {
-    maxWidth: 720,
-    margin: '64px auto',
+    maxWidth: 960,
+    margin: '40px auto',
+    padding: '0 16px',
     fontFamily: 'system-ui, sans-serif',
     color: '#eee',
-    textAlign:'center'
   },
   btn: {
     padding:'10px 12px',
