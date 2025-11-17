@@ -39,14 +39,16 @@ async function ensureSchema() {
 }
 ensureSchema();
 
-// ----- CORS -----
-const raw = process.env.CORS_ORIGINS || '';
-const allowed = new Set(raw.split(',').map(s => s.trim()).filter(Boolean));
-const allowAll = allowed.has('*') || allowed.size === 0;
+// ----- CORS (tighten to prod + local dev) -----
+const allowedOrigins = [
+  'https://blackjack480.vercel.app', // prod frontend
+  'http://localhost:5173',           // Vite dev
+];
 
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowAll || allowed.has(origin)) return cb(null, true);
+    // allow same-origin/no-origin (curl, health checks) and the whitelist above
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
     return cb(new Error(`CORS: ${origin} not allowed`), false);
   },
   credentials: true,
@@ -208,9 +210,6 @@ app.get('/api/leaderboard', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-
-// Example protected write route to change credits later if needed
-// app.post('/api/credits/set', async (req, res) => { ... })
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API listening on http://localhost:${PORT}`));
