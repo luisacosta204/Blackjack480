@@ -12,8 +12,8 @@ type User = {
 };
 
 export default function App() {
-  const [checked, setChecked] = useState(false); // have we checked auth yet?
-  const [authed, setAuthed] = useState(false);   // logged-in?
+  const [checked, setChecked] = useState(false);
+  const [authed, setAuthed] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [mode, setMode] = useState<'home' | 'blackjack' | 'leaderboard'>('home');
 
@@ -40,25 +40,16 @@ export default function App() {
     setMode('home');
   }
 
-  // While we don't know auth state yet, render nothing (or a spinner if you want)
   if (!checked) return null;
 
-  // Not authenticated -> show the React-ified login page
   if (!authed) {
-    return (
-      <LoginPage
-        onAuthed={async () => {
-          await refreshMe();
-        }}
-      />
-    );
+    return <LoginPage onAuthed={async () => { await refreshMe(); }} />;
   }
 
-  // Authenticated -> show app views
   if (mode === 'home') {
     return (
       <Home
-        user={user}                                 {/* <-- pass user here */}
+        user={user}
         onPlayBlackjack={() => setMode('blackjack')}
         onViewLeaderboard={() => setMode('leaderboard')}
         onViewProfile={() => { /* optional later */ }}
@@ -70,7 +61,6 @@ export default function App() {
     return <Blackjack onBack={() => setMode('home')} />;
   }
 
-  // mode === 'leaderboard'
   return (
     <div style={styles.shell}>
       <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16}}>
