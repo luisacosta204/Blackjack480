@@ -58,7 +58,7 @@ export default function App() {
   }
 
   if (mode === 'blackjack') {
-    return <Blackjack onBack={() => setMode('home')} />;
+    return <Blackjack user={user} onBack={() => setMode('home')} />;
   }
 
   return (
