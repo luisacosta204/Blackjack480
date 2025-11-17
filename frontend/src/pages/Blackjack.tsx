@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import '../styles/global.css';
 import '../styles/blackjack.css';
 import '../styles/header-user.css';
-import { initBlackjack } from '../legacy/blackjack';
+import { initBlackjack } from '../legacy/blackjack.ts';
 
 type Props = {
   onBack?: () => void; // optional: let App.tsx handle navigation
