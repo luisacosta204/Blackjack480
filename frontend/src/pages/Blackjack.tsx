@@ -10,6 +10,8 @@ type Props = {
   onBack?: () => void;
 };
 
+type BlackjackAPI = { destroy?: () => void };
+
 export default function Blackjack({ user, onBack }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [displayName, setDisplayName] = useState('Guest');
@@ -30,8 +32,10 @@ export default function Blackjack({ user, onBack }: Props) {
   // init legacy game
   useEffect(() => {
     if (!rootRef.current) return;
-    const destroy = initBlackjack(rootRef.current);
-    return () => destroy?.();
+    const api = initBlackjack(rootRef.current) as BlackjackAPI; // returns { destroy() {} }
+    return () => {
+      if (api && typeof api.destroy === 'function') api.destroy();
+    };
   }, []);
 
   function handleBackClick(e: React.MouseEvent) {
