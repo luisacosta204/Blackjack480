@@ -6,6 +6,9 @@
  * - Back button handling removed (React controls it)
  */
 
+import { recordGameResult } from '../api/game';
+import { me } from '../api/auth';
+
 export function initBlackjack(rootEl: HTMLElement) {
   console.log('[BJ] init');
 
@@ -96,6 +99,7 @@ export function initBlackjack(rootEl: HTMLElement) {
 
   // ------- State -------
   let bank = loadBank();
+  let bankBeforeRound = bank; // <<< NEW: track pre-round bank for delta
   let shoe: Array<{ r: string; s: string }> = [];
   let discard: Array<{ r: string; s: string }> = [];
   let dealer: { cards: Array<{ r: string; s: string }> } = { cards: [] };
@@ -390,8 +394,13 @@ export function initBlackjack(rootEl: HTMLElement) {
     if (betPerHand <= 0) return setStatus('Please place a bet first.');
     if (totalWager > bank) return setStatus('Total wager exceeds your bank. Lower bet or hands.');
 
+    // <<< NEW: capture bank before any deductions so delta is true round P/L
+    bankBeforeRound = bank;
+
+    // Deduct total wager up front
     bank -= totalWager; saveBank(); updateBankBadge();
 
+    // init hands
     hands = Array.from({ length: hCount }, () => ({
       cards: [], bet: betPerHand, stood: false, doubled: false, splitUsed: false, insurance: 0, finished: false, hitOnce: false
     }));
@@ -400,11 +409,13 @@ export function initBlackjack(rootEl: HTMLElement) {
     roundActive = true;
     insuranceOffered = false;
 
+    // initial deal (player, dealer, player, dealer)
     for (let i = 0; i < 2; i++) {
       for (let h = 0; h < hands.length; h++) hands[h].cards.push(drawCard());
       dealer.cards.push(drawCard());
     }
 
+    // Offer insurance if dealer shows Ace
     if (dealer.cards[0].r === 'A') {
       insuranceOffered = true;
       setStatus('Dealer shows Ace. You may take Insurance (2:1) before acting.');
@@ -412,6 +423,7 @@ export function initBlackjack(rootEl: HTMLElement) {
       setStatus('Your move on Hand 1: Hit, Stand, Double, or Split (if allowed).');
     }
 
+    // Natural BJs
     const anyPlayerBJ = hands.some(h => isBlackjack(h.cards));
     const dealerBJ = isBlackjack(dealer.cards);
 
@@ -419,6 +431,7 @@ export function initBlackjack(rootEl: HTMLElement) {
 
     if (dealerBJ) { settleAll(true); return; }
     if (anyPlayerBJ) {
+      // Pay naturals immediately
       for (const hand of hands) {
         if (isBlackjack(hand.cards)) {
           const payout = Math.floor(hand.bet * 3 / 2) + hand.bet;
@@ -552,6 +565,24 @@ export function initBlackjack(rootEl: HTMLElement) {
     setStatus('Round complete. Start a new round or adjust your bet.');
     updateActionButtons();
     newRoundBtn.disabled = false;
+
+    // NEW: report round P/L to backend and refresh server credits in header
+    (async () => {
+      try {
+        const delta = bank - bankBeforeRound;
+        if (delta !== 0) {
+          await recordGameResult(delta > 0, delta);
+
+          // Pull fresh credits from backend and show in the header badge (scoped to this root)
+          const u = await me();
+          if (bankBadgeEl && typeof (u as any)?.credits === 'number') {
+            bankBadgeEl.textContent = `Bank: ${(u as any).credits} chips`;
+          }
+        }
+      } catch (e) {
+        console.warn('Result report/refresh failed:', e);
+      }
+    })();
   }
 
   function onNewRound() {
