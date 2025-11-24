@@ -5,101 +5,101 @@
  * - Assets: served from Vite public/ (e.g., /assets/decks/manifest.json)
  * - Back button handling removed (React controls it)
  */
-
-import { recordGameResult } from '../api/game';
-import { me } from '../api/auth';
+import { reportResult } from "../api/game";
 
 export function initBlackjack(rootEl: HTMLElement) {
-  console.log('[BJ] init');
+  console.log("[BJ] init");
 
   // ------- DOM (scoped to rootEl) -------
   const $id = <T extends Element = HTMLElement>(id: string) =>
-    rootEl.querySelector<T>('#' + id);
+    rootEl.querySelector<T>("#" + id);
 
-  const dealerCardsEl = $id<HTMLDivElement>('dealerCards')!;
-  const playerCardsEl = $id<HTMLDivElement>('playerCards')!;
-  const dealerScoreEl = $id<HTMLElement>('dealerScore')!;
-  const playerScoreEl = $id<HTMLElement>('playerScore')!;
-  const statusEl = $id<HTMLElement>('status')!;
+  const dealerCardsEl = $id<HTMLDivElement>("dealerCards")!;
+  const playerCardsEl = $id<HTMLDivElement>("playerCards")!;
+  const dealerScoreEl = $id<HTMLElement>("dealerScore")!;
+  const playerScoreEl = $id<HTMLElement>("playerScore")!;
+  const statusEl = $id<HTMLElement>("status")!;
 
-  const betAmountEl = $id<HTMLElement>('betAmount')!;
-  const totalWagerEl = $id<HTMLElement>('totalWager')!;
-  const bankBadgeEl = $id<HTMLElement>('bankBadge')!;
-  const shoeInfoEl = $id<HTMLElement>('shoeInfo')!;
-  const countInfoEl = $id<HTMLElement>('countInfo')!;
-  const countLabelEl = $id<HTMLElement>('countLabel')!;
+  const betAmountEl = $id<HTMLElement>("betAmount")!;
+  const totalWagerEl = $id<HTMLElement>("totalWager")!;
+  const bankBadgeEl = $id<HTMLElement>("bankBadge")!;
+  const shoeInfoEl = $id<HTMLElement>("shoeInfo")!;
+  const countInfoEl = $id<HTMLElement>("countInfo")!;
+  const countLabelEl = $id<HTMLElement>("countLabel")!;
 
-  const chipButtons = rootEl.querySelectorAll<HTMLButtonElement>('.chip-btn');
-  const dealBtn = $id<HTMLButtonElement>('dealBtn')!;
-  const newRoundBtn = $id<HTMLButtonElement>('newRoundBtn')!;
-  const clearBetBtn = $id<HTMLButtonElement>('clearBetBtn')!;
-  const hitBtn = $id<HTMLButtonElement>('hitBtn')!;
-  const standBtn = $id<HTMLButtonElement>('standBtn')!;
-  const doubleBtn = $id<HTMLButtonElement>('doubleBtn')!;
-  const splitBtn = $id<HTMLButtonElement>('splitBtn')!;
-  const insuranceBtn = $id<HTMLButtonElement>('insuranceBtn')!;
-  const handsSelect = $id<HTMLSelectElement>('handsSelect')!;
-  const deckSelectEl = $id<HTMLSelectElement>('deckSelect')!;
-  const resetBankBtn = $id<HTMLButtonElement>('resetBankBtn')!;
+  const chipButtons = rootEl.querySelectorAll<HTMLButtonElement>(".chip-btn");
+  const dealBtn = $id<HTMLButtonElement>("dealBtn")!;
+  const newRoundBtn = $id<HTMLButtonElement>("newRoundBtn")!;
+  const clearBetBtn = $id<HTMLButtonElement>("clearBetBtn")!;
+  const hitBtn = $id<HTMLButtonElement>("hitBtn")!;
+  const standBtn = $id<HTMLButtonElement>("standBtn")!;
+  const doubleBtn = $id<HTMLButtonElement>("doubleBtn")!;
+  const splitBtn = $id<HTMLButtonElement>("splitBtn")!;
+  const insuranceBtn = $id<HTMLButtonElement>("insuranceBtn")!;
+  const handsSelect = $id<HTMLSelectElement>("handsSelect")!;
+  const deckSelectEl = $id<HTMLSelectElement>("deckSelect")!;
+  const resetBankBtn = $id<HTMLButtonElement>("resetBankBtn")!;
 
   // optional header elements (present in this page)
-  const headerAvatar = $id<HTMLImageElement>('headerAvatar');
-  const headerUsername = $id<HTMLElement>('headerUsername');
+  const headerAvatar = $id<HTMLImageElement>("headerAvatar");
+  const headerUsername = $id<HTMLElement>("headerUsername");
 
   // ------- Constants / Config -------
-  const DECK_KEY = 'bjDeck';
-  const BANK_KEY = 'bjBank';
+  const DECK_KEY = "bjDeck";
+  const BANK_KEY = "bjBank";
   const START_BANK = 500;
   const NUM_DECKS = 6;
   const RESHUFFLE_PENETRATION = 0.75;
 
   // Deck style (images)
   let cardTextures: Record<string, string> = {};
-  let deckBackImage = '';
+  let deckBackImage = "";
 
-  async function loadDeckTheme(theme = 'style_1') {
+  async function loadDeckTheme(theme = "style_1") {
     try {
-      const res = await fetch(`/assets/decks/${theme}.json`, { cache: 'no-store' });
+      const res = await fetch(`/assets/decks/${theme}.json`, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const base = data.path ?? '/assets/cards/';
+      const base = data.path ?? "/assets/cards/";
       const rawMap = data.cards ?? {};
 
       const normSuit = (s: string) =>
-        s.replace(/\u2660/g, '♠').replace(/\u2665/g, '♥').replace(/\u2666/g, '♦').replace(/\u2663/g, '♣');
+        s.replace(/\u2660/g, "♠")
+          .replace(/\u2665/g, "♥")
+          .replace(/\u2666/g, "♦")
+          .replace(/\u2663/g, "♣");
 
       const out: Record<string, string> = {};
       for (const [k, v] of Object.entries<string>(rawMap)) {
         const key = normSuit(k.trim());
-        const val = v.includes('/') ? v : base + v;
+        const val = v.includes("/") ? v : base + v;
         out[key] = val;
         const m = key.match(/^([AJQK]|10|[2-9])(♠|♥|♦|♣)$/);
         if (m) {
-          const ascii = { '♠': 'S', '♥': 'H', '♦': 'D', '♣': 'C' }[m[2] as '♠'|'♥'|'♦'|'♣'];
+          const ascii = { "♠": "S", "♥": "H", "♦": "D", "♣": "C" }[m[2] as "♠" | "♥" | "♦" | "♣"];
           out[`${m[1]}${ascii}`] = val;
         }
       }
       cardTextures = out;
-      deckBackImage = data.back ? (data.back.includes('/') ? data.back : base + data.back) : '';
-      console.log('[Deck] Loaded', Object.keys(cardTextures).length, 'textures');
+      deckBackImage = data.back ? (data.back.includes("/") ? data.back : base + data.back) : "";
+      console.log("[Deck] Loaded", Object.keys(cardTextures).length, "textures");
     } catch (e) {
-      console.warn('Deck theme failed to load; falling back to text cards.', e);
+      console.warn("Deck theme failed to load; falling back to text cards.", e);
       cardTextures = {};
-      deckBackImage = '';
+      deckBackImage = "";
     }
   }
 
   // Hi-Lo
   let runningCount = 0;
   function hiLoValue(rank: string) {
-    if (['2', '3', '4', '5', '6'].includes(rank)) return 1;
-    if (['7', '8', '9'].includes(rank)) return 0;
+    if (["2", "3", "4", "5", "6"].includes(rank)) return 1;
+    if (["7", "8", "9"].includes(rank)) return 0;
     return -1;
   }
 
   // ------- State -------
   let bank = loadBank();
-  let bankBeforeRound = bank; // <<< NEW: track pre-round bank for delta
   let shoe: Array<{ r: string; s: string }> = [];
   let discard: Array<{ r: string; s: string }> = [];
   let dealer: { cards: Array<{ r: string; s: string }> } = { cards: [] };
@@ -120,104 +120,110 @@ export function initBlackjack(rootEl: HTMLElement) {
   let roundActive = false;
   let insuranceOffered = false;
 
-  // ------- Header username/avatar (same logic) -------
+  // ------- Header username/avatar -------
   {
-    const storedName = localStorage.getItem('bj21.username');
-    const storedAvatar = localStorage.getItem('bj21.avatar');
+    const storedName = localStorage.getItem("bj21.username");
+    const storedAvatar = localStorage.getItem("bj21.avatar");
     const username = storedName || `Guest_${Math.floor(1000 + Math.random() * 9000)}`;
     if (headerUsername) headerUsername.textContent = username;
-    localStorage.setItem('bj21.username', username);
+    localStorage.setItem("bj21.username", username);
     if (storedAvatar && headerAvatar) headerAvatar.src = storedAvatar;
   }
   const storageHandler = (e: StorageEvent) => {
-    if (e.key === 'bj21.avatar' && e.newValue && headerAvatar) headerAvatar.src = e.newValue;
+    if (e.key === "bj21.avatar" && e.newValue && headerAvatar) headerAvatar.src = e.newValue;
   };
-  window.addEventListener('storage', storageHandler);
+  window.addEventListener("storage", storageHandler);
 
   // ------- Init -------
   updateBankBadge();
   updateBetLabel();
   updateTotalWager();
-  setStatus('Loading decks…');
+  setStatus("Loading decks…");
   (async () => {
     const selectedDeck = await populateDeckMenu();
-    if (selectedDeck === 'text') {
+    if (selectedDeck === "text") {
       cardTextures = {};
-      deckBackImage = '';
+      deckBackImage = "";
     } else {
       await loadDeckTheme(selectedDeck);
     }
-    setStatus('Place your bet to begin.');
+    setStatus("Place your bet to begin.");
     buildShoe();
     updateShoeInfo();
     wireEvents();
-    // initial passive render
     renderHandsSimpleWhenNoGame();
     updateActionButtons();
   })();
 
   // ------- Helpers -------
-  function setStatus(msg: string, type = 'info') {
+  function setStatus(msg: string, type = "info") {
     if (!statusEl) return;
     statusEl.textContent = msg;
     statusEl.className = `toast ${type}`;
   }
   async function populateDeckMenu() {
-    if (!deckSelectEl) return 'style_1';
+    if (!deckSelectEl) return "style_1";
     try {
-      const res = await fetch('/assets/decks/manifest.json', { cache: 'no-store' });
+      const res = await fetch("/assets/decks/manifest.json", { cache: "no-store" });
       if (!res.ok) throw new Error(`Manifest load failed: ${res.status}`);
       const manifest = await res.json();
 
-      deckSelectEl.innerHTML = '';
+      deckSelectEl.innerHTML = "";
       for (const deck of manifest.decks as Array<{ id: string; name: string }>) {
-        const opt = document.createElement('option');
+        const opt = document.createElement("option");
         opt.value = deck.id;
         opt.textContent = deck.name;
         deckSelectEl.appendChild(opt);
       }
-      const savedDeck = localStorage.getItem(DECK_KEY) || manifest.default || manifest.decks[0]?.id || 'style_1';
+      const savedDeck =
+        localStorage.getItem(DECK_KEY) || manifest.default || manifest.decks[0]?.id || "style_1";
       deckSelectEl.value = savedDeck;
       localStorage.setItem(DECK_KEY, savedDeck);
       return savedDeck as string;
     } catch (err) {
-      console.warn('Deck manifest failed to load:', err);
+      console.warn("Deck manifest failed to load:", err);
       if (deckSelectEl.options.length === 0) {
-        const opt = document.createElement('option');
-        opt.value = 'style_1';
-        opt.textContent = 'Style 1 (Images)';
+        const opt = document.createElement("option");
+        opt.value = "style_1";
+        opt.textContent = "Style 1 (Images)";
         deckSelectEl.appendChild(opt);
-        const opt2 = document.createElement('option');
-        opt2.value = 'text';
-        opt2.textContent = 'Text Only';
+        const opt2 = document.createElement("option");
+        opt2.value = "text";
+        opt2.textContent = "Text Only";
         deckSelectEl.appendChild(opt2);
       }
-      return 'style_1';
+      return "style_1";
     }
   }
 
   function updateBankBadge() {
     if (!bankBadgeEl) return;
     bankBadgeEl.textContent = `Bank: ${bank} chips`;
-    bankBadgeEl.className = 'badge';
+    bankBadgeEl.className = "badge";
   }
-  function updateBetLabel() { if (betAmountEl) betAmountEl.textContent = String(betPerHand); }
+  function updateBetLabel() {
+    if (betAmountEl) betAmountEl.textContent = String(betPerHand);
+  }
   function updateTotalWager() {
     if (!totalWagerEl) return;
     const h = getHandsCount();
     totalWagerEl.textContent = String(betPerHand * h);
   }
-  function getHandsCount() { return parseInt(handsSelect?.value || '1', 10); }
+  function getHandsCount() {
+    return parseInt(handsSelect?.value || "1", 10);
+  }
 
   function loadBank() {
     const v = localStorage.getItem(BANK_KEY);
     return Number.isFinite(+v!) && +v! > 0 ? +v! : START_BANK;
   }
-  function saveBank() { localStorage.setItem(BANK_KEY, String(bank)); }
+  function saveBank() {
+    localStorage.setItem(BANK_KEY, String(bank));
+  }
 
   function buildShoe() {
-    const suits = ['♠','♥','♦','♣'];
-    const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+    const suits = ["♠", "♥", "♦", "♣"];
+    const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     shoe = [];
     for (let d = 0; d < NUM_DECKS; d++) {
       for (const s of suits) for (const r of ranks) shoe.push({ r, s });
@@ -236,46 +242,52 @@ export function initBlackjack(rootEl: HTMLElement) {
     const used = NUM_DECKS * 52 - shoe.length;
     if (used / (NUM_DECKS * 52) >= RESHUFFLE_PENETRATION) {
       buildShoe();
-      setStatus('Shuffling the shoe…', 'info');
+      setStatus("Shuffling the shoe…", "info");
     }
     const c = shoe.pop()!;
     runningCount += hiLoValue(c.r);
     return c;
   }
   function cardValue(r: string) {
-    if (r === 'A') return 11;
-    if (['K','Q','J'].includes(r)) return 10;
+    if (r === "A") return 11;
+    if (["K", "Q", "J"].includes(r)) return 10;
     return parseInt(r, 10);
   }
-  function handValue(cards: Array<{r:string;s:string}>) {
-    let total = 0, aces = 0;
+  function handValue(cards: Array<{ r: string; s: string }>) {
+    let total = 0,
+      aces = 0;
     for (const c of cards) {
       total += cardValue(c.r);
-      if (c.r === 'A') aces++;
+      if (c.r === "A") aces++;
     }
-    while (total > 21 && aces > 0) { total -= 10; aces--; }
+    while (total > 21 && aces > 0) {
+      total -= 10;
+      aces--;
+    }
     return total;
   }
-  function isBlackjack(cards: Array<{r:string;s:string}>) { return cards.length === 2 && handValue(cards) === 21; }
+  function isBlackjack(cards: Array<{ r: string; s: string }>) {
+    return cards.length === 2 && handValue(cards) === 21;
+  }
   function canSplit(hand: Hand) {
     if (hand.splitUsed) return false;
     if (hand.cards.length !== 2) return false;
     const [a, b] = hand.cards;
-    const vA = a.r === 'A' ? 11 : cardValue(a.r);
-    const vB = b.r === 'A' ? 11 : cardValue(b.r);
+    const vA = a.r === "A" ? 11 : cardValue(a.r);
+    const vB = b.r === "A" ? 11 : cardValue(b.r);
     return vA === vB;
   }
 
-  function cardNode(card: {r:string;s:string}, facedown: boolean) {
-    const el = document.createElement('div');
-    el.className = `card-ui${facedown ? ' back' : ''}`;
+  function cardNode(card: { r: string; s: string }, facedown: boolean) {
+    const el = document.createElement("div");
+    el.className = `card-ui${facedown ? " back" : ""}`;
 
     if (facedown) {
       if (deckBackImage) {
-        const img = document.createElement('img');
+        const img = document.createElement("img");
         img.src = deckBackImage;
-        img.alt = 'Card Back';
-        img.className = 'card-img';
+        img.alt = "Card Back";
+        img.className = "card-img";
         el.appendChild(img);
       }
       return el;
@@ -285,15 +297,15 @@ export function initBlackjack(rootEl: HTMLElement) {
     const file = cardTextures[key];
 
     if (file) {
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.src = file;
-      const suits: any = { '♠': 'Spades', '♥': 'Hearts', '♦': 'Diamonds', '♣': 'Clubs' };
-      const ranks: any = { 'A': 'Ace', 'J': 'Jack', 'Q': 'Queen', 'K': 'King' };
+      const suits: any = { "♠": "Spades", "♥": "Hearts", "♦": "Diamonds", "♣": "Clubs" };
+      const ranks: any = { A: "Ace", J: "Jack", Q: "Queen", K: "King" };
       img.alt = `${ranks[card.r] || card.r} of ${suits[card.s]}`;
-      img.className = 'card-img';
+      img.className = "card-img";
       el.appendChild(img);
     } else {
-      const red = (card.s === '♥' || card.s === '♦') ? ' red' : '';
+      const red = card.s === "♥" || card.s === "♦" ? " red" : "";
       el.innerHTML = `
         <div class="corner${red}">${card.r}${card.s}</div>
         <div class="center${red}">${card.s}</div>
@@ -311,7 +323,13 @@ export function initBlackjack(rootEl: HTMLElement) {
     standBtn.disabled = !playing || !hand;
     doubleBtn.disabled = !playing || !hand || !firstMove || bank < hand.bet;
     splitBtn.disabled = !playing || !hand || !canSplit(hand) || bank < hand.bet;
-    insuranceBtn.disabled = !(insuranceOffered && hand && firstMove && hand.insurance === 0 && bank >= Math.floor(hand.bet / 2));
+    insuranceBtn.disabled = !(
+      insuranceOffered &&
+      hand &&
+      firstMove &&
+      hand.insurance === 0 &&
+      bank >= Math.floor(hand.bet / 2)
+    );
     dealBtn.disabled = playing;
     newRoundBtn.disabled = playing;
   }
@@ -325,61 +343,67 @@ export function initBlackjack(rootEl: HTMLElement) {
 
     const decksRemaining = Math.max(remaining / 52, 0.25);
     const trueCount = runningCount / decksRemaining;
-    const tcDisplay = (trueCount >= 0 ? '+' : '') + (Math.round(trueCount * 10) / 10).toFixed(1);
-    if (countInfoEl) countInfoEl.textContent = `${runningCount >= 0 ? '+' : ''}${runningCount} / ${tcDisplay}`;
+    const tcDisplay = (trueCount >= 0 ? "+" : "") + (Math.round(trueCount * 10) / 10).toFixed(1);
+    if (countInfoEl) countInfoEl.textContent = `${runningCount >= 0 ? "+" : ""}${runningCount} / ${tcDisplay}`;
 
-    let label = 'Neutral';
-    if (trueCount >= 2) label = 'Hot';
-    else if (trueCount <= -2) label = 'Cold';
+    let label = "Neutral";
+    if (trueCount >= 2) label = "Hot";
+    else if (trueCount <= -2) label = "Cold";
     if (countLabelEl) {
       countLabelEl.textContent = label;
-      countLabelEl.setAttribute('data-state', label);
+      countLabelEl.setAttribute("data-state", label);
     }
   }
 
   function renderTable(hideHole = true) {
     // Dealer
-    dealerCardsEl.innerHTML = '';
+    dealerCardsEl.innerHTML = "";
     dealer.cards.forEach((c, idx) => {
       const isHole = hideHole && idx === 1 && roundActive;
       dealerCardsEl.appendChild(cardNode(c, isHole));
     });
-    const dealerShown = hideHole && roundActive ? cardValue(dealer.cards[0].r) : handValue(dealer.cards);
-    dealerScoreEl.textContent = `Score: ${hideHole && roundActive ? dealerShown + '+' : dealerShown}`;
+    const dealerShown =
+      hideHole && roundActive ? cardValue(dealer.cards[0].r) : handValue(dealer.cards);
+    dealerScoreEl.textContent = `Score: ${hideHole && roundActive ? dealerShown + "+" : dealerShown}`;
 
     // Player(s)
     const hCount = hands.length;
     if (hCount <= 1) {
-      playerCardsEl.innerHTML = '';
-      hands[0]?.cards.forEach(c => playerCardsEl.appendChild(cardNode(c, false)));
+      playerCardsEl.innerHTML = "";
+      hands[0]?.cards.forEach((c) => playerCardsEl.appendChild(cardNode(c, false)));
       playerScoreEl.textContent = `Score: ${handValue(hands[0]?.cards || [])}`;
     } else {
-      const container = document.createElement('div');
-      container.className = 'player-hands';
+      const container = document.createElement("div");
+      container.className = "player-hands";
       container.dataset.hands = String(hands.length);
       hands.forEach((hand, idx) => {
-        const block = document.createElement('div');
-        block.className = 'player-hand' + (idx === activeIndex && roundActive ? ' active' : '') + (hand.finished ? ' finished' : '');
-        const label = document.createElement('div');
-        label.className = 'label';
-        label.textContent = `Hand ${idx + 1} — Bet ${hand.bet}${hand.insurance ? ` (+Ins ${hand.insurance})` : ''}`;
-        const cardsDiv = document.createElement('div');
-        cardsDiv.className = 'cards';
-        hand.cards.forEach(c => cardsDiv.appendChild(cardNode(c, false)));
-        const score = document.createElement('div');
-        score.className = 'score';
+        const block = document.createElement("div");
+        block.className =
+          "player-hand" +
+          (idx === activeIndex && roundActive ? " active" : "") +
+          (hand.finished ? " finished" : "");
+        const label = document.createElement("div");
+        label.className = "label";
+        label.textContent = `Hand ${idx + 1} — Bet ${hand.bet}${
+          hand.insurance ? ` (+Ins ${hand.insurance})` : ""
+        }`;
+        const cardsDiv = document.createElement("div");
+        cardsDiv.className = "cards";
+        hand.cards.forEach((c) => cardsDiv.appendChild(cardNode(c, false)));
+        const score = document.createElement("div");
+        score.className = "score";
         score.textContent = `Score: ${handValue(hand.cards)}`;
         block.appendChild(label);
         block.appendChild(cardsDiv);
         block.appendChild(score);
         container.appendChild(block);
       });
-      const parent = playerCardsEl.parentElement!.parentElement!; // .hand wrapper
-      const existing = parent.querySelector('.player-hands');
+      const parent = playerCardsEl.parentElement!.parentElement!;
+      const existing = parent.querySelector(".player-hands");
       if (existing) existing.remove();
       parent.appendChild(container);
-      playerCardsEl.innerHTML = '';
-      playerScoreEl.textContent = '—';
+      playerCardsEl.innerHTML = "";
+      playerScoreEl.textContent = "—";
     }
 
     updateShoeInfo();
@@ -391,54 +415,59 @@ export function initBlackjack(rootEl: HTMLElement) {
     if (roundActive) return;
     const hCount = getHandsCount();
     const totalWager = betPerHand * hCount;
-    if (betPerHand <= 0) return setStatus('Please place a bet first.');
-    if (totalWager > bank) return setStatus('Total wager exceeds your bank. Lower bet or hands.');
+    if (betPerHand <= 0) return setStatus("Please place a bet first.");
+    if (totalWager > bank) return setStatus("Total wager exceeds your bank. Lower bet or hands.");
 
-    // <<< NEW: capture bank before any deductions so delta is true round P/L
-    bankBeforeRound = bank;
+    bank -= totalWager;
+    saveBank();
+    updateBankBadge();
 
-    // Deduct total wager up front
-    bank -= totalWager; saveBank(); updateBankBadge();
-
-    // init hands
     hands = Array.from({ length: hCount }, () => ({
-      cards: [], bet: betPerHand, stood: false, doubled: false, splitUsed: false, insurance: 0, finished: false, hitOnce: false
+      cards: [],
+      bet: betPerHand,
+      stood: false,
+      doubled: false,
+      splitUsed: false,
+      insurance: 0,
+      finished: false,
+      hitOnce: false,
     }));
     activeIndex = 0;
     dealer = { cards: [] };
     roundActive = true;
     insuranceOffered = false;
 
-    // initial deal (player, dealer, player, dealer)
     for (let i = 0; i < 2; i++) {
       for (let h = 0; h < hands.length; h++) hands[h].cards.push(drawCard());
       dealer.cards.push(drawCard());
     }
 
-    // Offer insurance if dealer shows Ace
-    if (dealer.cards[0].r === 'A') {
+    if (dealer.cards[0].r === "A") {
       insuranceOffered = true;
-      setStatus('Dealer shows Ace. You may take Insurance (2:1) before acting.');
+      setStatus("Dealer shows Ace. You may take Insurance (2:1) before acting.");
     } else {
-      setStatus('Your move on Hand 1: Hit, Stand, Double, or Split (if allowed).');
+      setStatus("Your move on Hand 1: Hit, Stand, Double, or Split (if allowed).");
     }
 
-    // Natural BJs
-    const anyPlayerBJ = hands.some(h => isBlackjack(h.cards));
+    const anyPlayerBJ = hands.some((h) => isBlackjack(h.cards));
     const dealerBJ = isBlackjack(dealer.cards);
 
     renderTable(true);
 
-    if (dealerBJ) { settleAll(true); return; }
+    if (dealerBJ) {
+      settleAll(true);
+      return;
+    }
     if (anyPlayerBJ) {
-      // Pay naturals immediately
       for (const hand of hands) {
         if (isBlackjack(hand.cards)) {
           const payout = Math.floor(hand.bet * 3 / 2) + hand.bet;
-          bank += payout; saveBank(); hand.finished = true;
+          bank += payout;
+          saveBank();
+          hand.finished = true;
         }
       }
-      if (hands.every(h => h.finished)) endRound();
+      if (hands.every((h) => h.finished)) endRound();
     }
     renderTable(true);
   }
@@ -446,51 +475,76 @@ export function initBlackjack(rootEl: HTMLElement) {
   function onHit() {
     const hand = hands[activeIndex];
     if (!roundActive || !hand || hand.finished) return;
-    hand.cards.push(drawCard()); hand.hitOnce = true;
-    if (handValue(hand.cards) > 21) { hand.finished = true; advanceHandOrDealer(); }
-    else { setStatus(`Hand ${activeIndex + 1}: Hit again or Stand.`); }
+    hand.cards.push(drawCard());
+    hand.hitOnce = true;
+    if (handValue(hand.cards) > 21) {
+      hand.finished = true;
+      advanceHandOrDealer();
+    } else {
+      setStatus(`Hand ${activeIndex + 1}: Hit again or Stand.`);
+    }
     renderTable(true);
   }
 
   function onStand() {
     const hand = hands[activeIndex];
     if (!roundActive || !hand || hand.finished) return;
-    hand.stood = true; hand.finished = true;
-    advanceHandOrDealer(); renderTable(true);
+    hand.stood = true;
+    hand.finished = true;
+    advanceHandOrDealer();
+    renderTable(true);
   }
 
   function onDouble() {
     const hand = hands[activeIndex];
     if (!roundActive || !hand || hand.finished) return;
     if (hand.cards.length !== 2) return;
-    if (bank < hand.bet) return setStatus('Not enough chips to double.');
+    if (bank < hand.bet) return setStatus("Not enough chips to double.");
 
-    bank -= hand.bet; saveBank(); updateBankBadge();
+    bank -= hand.bet;
+    saveBank();
+    updateBankBadge();
     hand.doubled = true;
-    hand.cards.push(drawCard()); hand.hitOnce = true; hand.finished = true;
-    advanceHandOrDealer(); renderTable(true);
+    hand.cards.push(drawCard());
+    hand.hitOnce = true;
+    hand.finished = true;
+    advanceHandOrDealer();
+    renderTable(true);
   }
 
   function onSplit() {
     const hand = hands[activeIndex];
     if (!roundActive || !hand || hand.finished) return;
     if (!canSplit(hand)) return;
-    if (bank < hand.bet) return setStatus('Not enough chips to split.');
+    if (bank < hand.bet) return setStatus("Not enough chips to split.");
 
     const [c1, c2] = hand.cards;
-    const second: Hand = { cards: [c2], bet: hand.bet, stood: false, doubled: false, splitUsed: false, insurance: 0, finished: false, hitOnce: false };
-    hand.cards = [c1]; hand.splitUsed = true;
+    const second: Hand = {
+      cards: [c2],
+      bet: hand.bet,
+      stood: false,
+      doubled: false,
+      splitUsed: false,
+      insurance: 0,
+      finished: false,
+      hitOnce: false,
+    };
+    hand.cards = [c1];
+    hand.splitUsed = true;
 
-    bank -= hand.bet; saveBank(); updateBankBadge();
+    bank -= hand.bet;
+    saveBank();
+    updateBankBadge();
 
     hands.splice(activeIndex + 1, 0, second);
 
     hand.cards.push(drawCard());
     second.cards.push(drawCard());
 
-    if (c1.r === 'A' && c2.r === 'A') {
-      hand.finished = true; second.finished = true;
-      setStatus('Split Aces: one card each, then stand.');
+    if (c1.r === "A" && c2.r === "A") {
+      hand.finished = true;
+      second.finished = true;
+      setStatus("Split Aces: one card each, then stand.");
       advanceHandOrDealer();
     } else {
       setStatus(`Split complete. Continue playing Hand ${activeIndex + 1}.`);
@@ -503,16 +557,23 @@ export function initBlackjack(rootEl: HTMLElement) {
     if (!roundActive || !hand || hand.finished || !insuranceOffered) return;
     if (hand.insurance > 0) return;
     const ins = Math.floor(hand.bet / 2);
-    if (bank < ins) return setStatus('Not enough chips for insurance.');
+    if (bank < ins) return setStatus("Not enough chips for insurance.");
 
-    bank -= ins; saveBank(); updateBankBadge();
-    hand.insurance = ins; setStatus(`Insurance taken on Hand ${activeIndex + 1}.`);
+    bank -= ins;
+    saveBank();
+    updateBankBadge();
+    hand.insurance = ins;
+    setStatus(`Insurance taken on Hand ${activeIndex + 1}.`);
     renderTable(true);
   }
 
   function advanceHandOrDealer() {
     const next = hands.findIndex((h, idx) => idx > activeIndex && !h.finished);
-    if (next !== -1) { activeIndex = next; setStatus(`Hand ${activeIndex + 1}: Your move.`); return; }
+    if (next !== -1) {
+      activeIndex = next;
+      setStatus(`Hand ${activeIndex + 1}: Your move.`);
+      return;
+    }
     dealerPlayAndSettle();
   }
 
@@ -525,64 +586,73 @@ export function initBlackjack(rootEl: HTMLElement) {
     settleAll(false);
   }
 
+  // Compute and post ONE delta for the whole round
   function settleAll(naturalCheck: boolean) {
     const dealerBJ = isBlackjack(dealer.cards);
     const dealerVal = handValue(dealer.cards);
 
+    // total delta vs start-of-round (bets were already deducted at deal time)
+    let roundDelta = 0;
+
     if (dealerBJ) {
       for (const hand of hands) {
         if (hand.insurance > 0) {
-          bank += hand.insurance * 3;
+          bank += hand.insurance * 3; // return stake + 2:1
+          roundDelta += hand.insurance * 3; // affects bank the same way here
           hand.insurance = 0;
         }
       }
-      saveBank(); updateBankBadge();
+      saveBank();
+      updateBankBadge();
     }
 
     for (const hand of hands) {
       if (hand.paid) continue;
+
       const pv = handValue(hand.cards);
+      const stake = hand.doubled ? hand.bet * 2 : hand.bet; // how much we actually risked this hand
       let payout = 0;
 
       if (naturalCheck && dealerBJ) {
-        if (isBlackjack(hand.cards)) payout = hand.bet * (hand.doubled ? 2 : 1);
+        // only push natural vs natural
+        if (isBlackjack(hand.cards)) {
+          payout = stake; // push returns stake
+        }
       } else {
-        if (pv > 21) payout = 0;
-        else if (dealerVal > 21 || pv > dealerVal) payout = hand.bet * (hand.doubled ? 4 : 2);
-        else if (pv === dealerVal) payout = hand.bet * (hand.doubled ? 2 : 1);
-        else payout = 0;
+        if (pv > 21) {
+          payout = 0; // loss: we already deducted stake at deal time
+          roundDelta -= stake;
+        } else if (dealerVal > 21 || pv > dealerVal) {
+          payout = stake * 2; // win -> return stake + win
+          roundDelta += stake; // net vs start: +stake
+        } else if (pv === dealerVal) {
+          payout = stake; // push -> return stake
+          // net 0
+        } else {
+          payout = 0; // loss
+          roundDelta -= stake;
+        }
       }
-      if (payout > 0) bank += payout;
+
+      if (payout > 0) {
+        bank += payout;
+        saveBank();
+      }
       hand.paid = true;
     }
 
-    saveBank(); updateBankBadge();
+    updateBankBadge();
     endRound();
+
+    // Fire-and-forget report (guest users will just be ignored by the backend)
+    reportResult(roundDelta > 0, roundDelta);
   }
 
   function endRound() {
     roundActive = false;
-    setStatus('Round complete. Start a new round or adjust your bet.');
+    setStatus("Round complete. Start a new round or adjust your bet.");
     updateActionButtons();
     newRoundBtn.disabled = false;
-
-    // NEW: report round P/L to backend and refresh server credits in header
-    (async () => {
-      try {
-        const delta = bank - bankBeforeRound;
-        if (delta !== 0) {
-          await recordGameResult(delta > 0, delta);
-
-          // Pull fresh credits from backend and show in the header badge (scoped to this root)
-          const u = await me();
-          if (bankBadgeEl && typeof (u as any)?.credits === 'number') {
-            bankBadgeEl.textContent = `Bank: ${(u as any).credits} chips`;
-          }
-        }
-      } catch (e) {
-        console.warn('Result report/refresh failed:', e);
-      }
-    })();
   }
 
   function onNewRound() {
@@ -593,15 +663,15 @@ export function initBlackjack(rootEl: HTMLElement) {
     activeIndex = 0;
     roundActive = false;
     insuranceOffered = false;
-    setStatus('Place your bet to begin.');
+    setStatus("Place your bet to begin.");
     renderTable(true);
   }
 
   function renderHandsSimpleWhenNoGame() {
-    dealerCardsEl.innerHTML = '';
-    playerCardsEl.innerHTML = '';
-    dealerScoreEl.textContent = 'Score: —';
-    playerScoreEl.textContent = 'Score: —';
+    dealerCardsEl.innerHTML = "";
+    playerCardsEl.innerHTML = "";
+    dealerScoreEl.textContent = "Score: —";
+    playerScoreEl.textContent = "Score: —";
   }
 
   // ------- Event wiring (and teardown tracking) -------
@@ -613,55 +683,64 @@ export function initBlackjack(rootEl: HTMLElement) {
   }
 
   function wireEvents() {
-    chipButtons.forEach(btn => {
+    chipButtons.forEach((btn) => {
       const handler = () => {
         if (roundActive) return;
         const add = parseInt(btn.dataset.chip!, 10);
         if (bank <= 0) return;
         betPerHand = Math.min(bank, betPerHand + add);
-        updateBetLabel(); updateTotalWager();
+        updateBetLabel();
+        updateTotalWager();
       };
-      on(btn, 'click', handler);
+      on(btn, "click", handler);
     });
 
-    on(clearBetBtn, 'click', () => {
+    on(clearBetBtn, "click", () => {
       if (roundActive) return;
-      betPerHand = 0; updateBetLabel(); updateTotalWager();
+      betPerHand = 0;
+      updateBetLabel();
+      updateTotalWager();
     });
 
-    on(handsSelect, 'change', updateTotalWager);
+    on(handsSelect, "change", updateTotalWager);
 
-    on(dealBtn, 'click', onDeal);
-    on(newRoundBtn, 'click', onNewRound);
-    on(hitBtn, 'click', onHit);
-    on(standBtn, 'click', onStand);
-    on(doubleBtn, 'click', onDouble);
-    on(splitBtn, 'click', onSplit);
-    on(insuranceBtn, 'click', onInsurance);
+    on(dealBtn, "click", onDeal);
+    on(newRoundBtn, "click", onNewRound);
+    on(hitBtn, "click", onHit);
+    on(standBtn, "click", onStand);
+    on(doubleBtn, "click", onDouble);
+    on(splitBtn, "click", onSplit);
+    on(insuranceBtn, "click", onInsurance);
 
-    on(resetBankBtn, 'click', () => {
-      bank = START_BANK; saveBank(); updateBankBadge(); setStatus('Bank reset to 500 chips.');
+    on(resetBankBtn, "click", () => {
+      bank = START_BANK;
+      saveBank();
+      updateBankBadge();
+      setStatus("Bank reset to 500 chips.");
     });
 
     if (deckSelectEl) {
-      on(deckSelectEl, 'change', async () => {
+      on(deckSelectEl, "change", async () => {
         const val = deckSelectEl.value;
         localStorage.setItem(DECK_KEY, val);
-        if (val === 'text') { cardTextures = {}; deckBackImage = ''; }
-        else { await loadDeckTheme(val); }
+        if (val === "text") {
+          cardTextures = {};
+          deckBackImage = "";
+        } else {
+          await loadDeckTheme(val);
+        }
         renderTable(roundActive);
-        setStatus(`Deck changed to ${val === 'text' ? 'Text Only' : val}.`);
+        setStatus(`Deck changed to ${val === "text" ? "Text Only" : val}.`);
       });
     }
   }
 
   // Public cleanup
   function destroy() {
-    console.log('[BJ] destroy');
-    teardown.forEach(fn => fn());
-    window.removeEventListener('storage', storageHandler);
+    console.log("[BJ] destroy");
+    teardown.forEach((fn) => fn());
+    window.removeEventListener("storage", storageHandler);
   }
 
-  // Expose optional helpers for testing if needed
   return { destroy };
 }
