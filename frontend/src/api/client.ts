@@ -1,24 +1,38 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL as string;
+// frontend/src/api/client.ts
+const API = 'https://blackjack480.onrender.com';
 
-export function getToken() { return localStorage.getItem('token'); }
-export function setToken(t: string) { localStorage.setItem('token', t); }
-export function clearToken() { localStorage.removeItem('token'); }
+const TOKEN_KEY = 'bj21.token';
 
-export async function api<T = any>(path: string, init: RequestInit = {}) {
-  // Use a simple record so we can mutate headers safely
+export function setToken(token: string) {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+export function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+export function getToken() {
+  return localStorage.getItem(TOKEN_KEY) || '';
+}
+
+export async function api<T = unknown>(
+  path: string,
+  init: RequestInit = {}
+): Promise<T> {
+  const token = getToken();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(init.headers as Record<string, string> | undefined),
   };
+  if (token) headers.Authorization = `Bearer ${token}`;
 
-  const t = getToken();
-  if (t) headers['Authorization'] = `Bearer ${t}`;
+  const res = await fetch(`${API}${path}`, {
+    ...init,
+    headers,
+    credentials: 'include',
+  });
 
-  const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
-
-  // Handle 204/empty body gracefully
-  if (res.status === 204) return undefined as T;
-  if (!res.ok) throw new Error(await res.text());
-
-  return res.json() as Promise<T>;
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`${res.status} ${text || res.statusText}`);
+  }
+  return (await res.json()) as T;
 }
