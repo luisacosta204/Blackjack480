@@ -100,7 +100,7 @@ export function initBlackjack(rootEl: HTMLElement) {
 
   // ------- State -------
   let bank = loadBank();
-  let bankBeforeRound = 0; // <— capture before each round
+  let bankBeforeRound = 0; // capture bank before each round starts
   let shoe: Array<{ r: string; s: string }> = [];
   let discard: Array<{ r: string; s: string }> = [];
   let dealer: { cards: Array<{ r: string; s: string }> } = { cards: [] };
@@ -419,8 +419,9 @@ export function initBlackjack(rootEl: HTMLElement) {
     if (betPerHand <= 0) return setStatus("Please place a bet first.");
     if (totalWager > bank) return setStatus("Total wager exceeds your bank. Lower bet or hands.");
 
-    bankBeforeRound = bank;           // <— capture BEFORE we deduct bets
-    bank -= totalWager;               // bets placed
+    // Capture bank BEFORE deducting stakes for accurate deltas
+    bankBeforeRound = bank;
+    bank -= totalWager;
     saveBank();
     updateBankBadge();
 
@@ -639,15 +640,19 @@ export function initBlackjack(rootEl: HTMLElement) {
   }
 
   function endRoundAndReport() {
+    // Compute & report net change vs start-of-round FIRST,
+    // so even if UI code throws, the backend receives the result.
+    const delta = bank - bankBeforeRound;
+    try {
+      reportResult(delta > 0, delta);
+    } catch {
+      /* no-op */
+    }
+
     roundActive = false;
     setStatus("Round complete. Start a new round or adjust your bet.");
     updateActionButtons();
     newRoundBtn.disabled = false;
-
-    // Compute & report net change vs start-of-round
-    const delta = bank - bankBeforeRound;
-    // Fire-and-forget (guest users/token-less calls are ignored by API)
-    try { reportResult(delta > 0, delta); } catch {}
   }
 
   function onNewRound() {
