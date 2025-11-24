@@ -1,5 +1,6 @@
+// frontend/src/GameStub.tsx
 import { useState } from 'react';
-import { recordGameResult } from './api/game';
+import { reportResult } from './api/game';
 
 export default function GameStub() {
   const [status, setStatus] = useState<string>('');
@@ -7,10 +8,10 @@ export default function GameStub() {
   async function submit(won: boolean, delta: number) {
     setStatus('Saving...');
     try {
-      await recordGameResult(won, delta);
+      await reportResult(won, delta);
       setStatus('Saved!');
     } catch (e: any) {
-      setStatus(e.message || 'Error');
+      setStatus(e?.message || 'Error');
     }
   }
 
