@@ -5,6 +5,7 @@ export type MeResponse = {
   id: number | string;
   username?: string;
   email?: string;
+  credits?: number;
 };
 
 // Login with email OR username + password
@@ -36,3 +37,4 @@ export async function me() {
 export function logout() {
   clearToken();
 }
+
