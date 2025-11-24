@@ -1,12 +1,13 @@
-// Blackjack.tsx
+// frontend/src/pages/Blackjack.tsx
 import { useEffect, useRef, useState } from 'react';
 import '../styles/global.css';
 import '../styles/header-user.css';
 import '../styles/blackjack.css';
 import { initBlackjack } from '../legacy/blackjack';
+import { me } from '../api/auth';
 
 type Props = {
-  user?: { username?: string; email?: string } | null;
+  user?: { username?: string; email?: string; credits?: number } | null;
   onBack?: () => void;
 };
 
@@ -16,7 +17,7 @@ export default function Blackjack({ user, onBack }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [displayName, setDisplayName] = useState('Guest');
 
-  // username/avatar resolve
+  // username resolve (and persist to local so legacy bits keep working)
   useEffect(() => {
     if (user?.username) {
       setDisplayName(user.username);
@@ -32,10 +33,23 @@ export default function Blackjack({ user, onBack }: Props) {
   // init legacy game
   useEffect(() => {
     if (!rootRef.current) return;
-    const api = initBlackjack(rootRef.current) as BlackjackAPI; // returns { destroy() {} }
+    const api = initBlackjack(rootRef.current) as BlackjackAPI; // returns { destroy }
     return () => {
       if (api && typeof api.destroy === 'function') api.destroy();
     };
+  }, []);
+
+  // seed the header Bank pill from server credits on open
+  useEffect(() => {
+    (async () => {
+      try {
+        const u = await me();
+        const badge = document.getElementById('bankBadge');
+        if (badge && typeof u?.credits === 'number') {
+          badge.textContent = `Bank: ${u.credits} chips`;
+        }
+      } catch {}
+    })();
   }, []);
 
   function handleBackClick(e: React.MouseEvent) {
