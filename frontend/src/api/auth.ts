@@ -1,3 +1,4 @@
+// frontend/src/api/auth.ts
 import { api, setToken, clearToken } from "./client";
 
 export type MeResponse = {
@@ -6,7 +7,7 @@ export type MeResponse = {
   email?: string;
 };
 
-/** Login with email OR username + password */
+// Login with email OR username + password
 export async function login(identifier: string, password: string) {
   const { token } = await api<{ token: string }>("/api/login", {
     method: "POST",
@@ -16,7 +17,7 @@ export async function login(identifier: string, password: string) {
   return token;
 }
 
-/** Register then auto-login */
+// Register then auto-login
 export async function register(username: string, email: string, password: string) {
   const { token } = await api<{ token: string }>("/api/register", {
     method: "POST",
@@ -26,12 +27,12 @@ export async function register(username: string, email: string, password: string
   return token;
 }
 
-/** Get the current user (uses bearer token from localStorage) */
+// Get the current user
 export async function me() {
   return api<MeResponse>("/api/me", { method: "GET" });
 }
 
-/** Clear the token locally */
+// Clear the token locally
 export function logout() {
   clearToken();
 }
