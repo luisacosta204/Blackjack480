@@ -1,13 +1,20 @@
-// frontend/src/api/game.ts
-import { api } from "./client";
+// api/game.ts
+const API = import.meta.env.VITE_API_BASE_URL;
 
-// Report one round's result (net chip delta). Requires auth token handled by client.ts
-export function reportResult(won: boolean, delta: number) {
-  // If not logged in, api() will still include no Authorization; server will 401 and we can ignore.
-  return api("/api/game/result", {
-    method: "POST",
+export async function reportResult(won: boolean, delta: number) {
+  // Only report if the player is authenticated (token saved by login/register)
+  const token = localStorage.getItem('bj21.token');
+  if (!token) return;
+
+  await fetch(`${API}/api/game/result`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify({ won, delta }),
-  }).catch(() => {
-    // It's fine if the user plays as guest — just ignore errors.
   });
 }
+
+// Back-compat for any old imports (e.g., GameStub.tsx)
+export const recordGameResult = reportResult;
