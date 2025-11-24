@@ -11,7 +11,7 @@ export default function GameStub() {
       await reportResult(won, delta);
       setStatus('Saved!');
     } catch (e: any) {
-      setStatus(e?.message || 'Error');
+      setStatus(e.message || 'Error');
     }
   }
 
