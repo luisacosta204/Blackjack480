@@ -3,8 +3,9 @@ import '../styles/global.css';
 import '../styles/header-user.css';
 import '../styles/blackjack.css';
 import { initBlackjack } from '../legacy/blackjack';
+import { reportResult } from '../api/game';
 
-type UserLite = { username?: string; email?: string; credits?: number }; // <—
+type UserLite = { username?: string; email?: string; credits?: number };
 type Props = {
   user?: UserLite | null;
   onBack?: () => void;
@@ -14,6 +15,10 @@ export default function Blackjack({ user, onBack }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [displayName, setDisplayName] = useState('Guest');
 
+  // store local “bank” value to detect change per round
+  const bankBeforeRound = useRef<number>(0);
+
+  // track username
   useEffect(() => {
     if (user?.username) {
       setDisplayName(user.username);
@@ -26,10 +31,29 @@ export default function Blackjack({ user, onBack }: Props) {
     }
   }, [user]);
 
+  // initialize blackjack and hook reporting
   useEffect(() => {
     if (!rootRef.current) return;
-    const teardown = initBlackjack(rootRef.current);
-    return () => teardown?.destroy?.();
+    const api = initBlackjack(rootRef.current);
+
+    // watch for “bank change” in localStorage (our legacy script updates it)
+    const observer = setInterval(() => {
+      const val = Number(localStorage.getItem('bjBank') ?? '0');
+      // when val changes and roundActive==false, post result
+      if (bankBeforeRound.current && val !== bankBeforeRound.current) {
+        const delta = val - bankBeforeRound.current;
+        if (delta !== 0) reportResult(delta > 0, delta);
+        bankBeforeRound.current = val;
+      }
+    }, 2000);
+
+    // initialize baseline
+    bankBeforeRound.current = Number(localStorage.getItem('bjBank') ?? '0');
+
+    return () => {
+      clearInterval(observer);
+      api?.destroy?.();
+    };
   }, []);
 
   function handleBackClick(e: React.MouseEvent) {
@@ -58,7 +82,9 @@ export default function Blackjack({ user, onBack }: Props) {
       <main className="container container--center" ref={rootRef}>
         <section className="panel">
           <h2 className="panel-header">Table</h2>
-          <p className="panel-subtle">Beat the dealer without going over 21. Blackjack pays 3:2. Dealer stands on 17.</p>
+          <p className="panel-subtle">
+            Beat the dealer without going over 21. Blackjack pays 3:2. Dealer stands on 17.
+          </p>
 
           <div className="table-wrap">
             <div className="row">
@@ -78,7 +104,9 @@ export default function Blackjack({ user, onBack }: Props) {
             </div>
           </div>
 
-          <div className="toast info mt-6" id="status" aria-live="polite">Place your bet to begin.</div>
+          <div className="toast info mt-6" id="status" aria-live="polite">
+            Place your bet to begin.
+          </div>
         </section>
 
         <section className="grid cols-2">
@@ -123,15 +151,23 @@ export default function Blackjack({ user, onBack }: Props) {
               <button className="btn-secondary btn" id="standBtn" disabled>Stand</button>
               <button className="btn-secondary btn" id="doubleBtn" disabled>Double</button>
               <button className="btn-secondary btn" id="splitBtn" disabled>Split</button>
-              <button className="btn-secondary btn" id="insuranceBtn" disabled>Take Insurance</button>
-              <button className="btn-secondary btn" id="changeDeckBtn" title="Switch card style">Change Deck</button>
-              <button className="btn-danger btn" id="resetBankBtn" title="Reset bank to 500">Reset Bank</button>
+              <button className="btn-secondary btn" id="insuranceBtn" disabled>
+                Take Insurance
+              </button>
+              <button className="btn-secondary btn" id="changeDeckBtn" title="Switch card style">
+                Change Deck
+              </button>
+              <button className="btn-danger btn" id="resetBankBtn" title="Reset bank to 500">
+                Reset Bank
+              </button>
             </div>
             <p className="panel-subtle mt-2 shoe-line">
               <span className="muted">Shoe:</span> <span id="shoeInfo">—</span>
               <span className="muted"> | Count:</span>
               <strong id="countInfo">—</strong>
-              <span className="muted"> (</span><strong id="countLabel">Neutral</strong><span className="muted">)</span>
+              <span className="muted">
+                ( <strong id="countLabel">Neutral</strong> )
+              </span>
             </p>
           </div>
         </section>
