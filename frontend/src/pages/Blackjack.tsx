@@ -1,23 +1,19 @@
-// frontend/src/pages/Blackjack.tsx
 import { useEffect, useRef, useState } from 'react';
 import '../styles/global.css';
 import '../styles/header-user.css';
 import '../styles/blackjack.css';
 import { initBlackjack } from '../legacy/blackjack';
-import { me } from '../api/auth';
 
+type UserLite = { username?: string; email?: string; credits?: number }; // <—
 type Props = {
-  user?: { username?: string; email?: string; credits?: number } | null;
+  user?: UserLite | null;
   onBack?: () => void;
 };
-
-type BlackjackAPI = { destroy?: () => void };
 
 export default function Blackjack({ user, onBack }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [displayName, setDisplayName] = useState('Guest');
 
-  // username resolve (and persist to local so legacy bits keep working)
   useEffect(() => {
     if (user?.username) {
       setDisplayName(user.username);
@@ -30,26 +26,10 @@ export default function Blackjack({ user, onBack }: Props) {
     }
   }, [user]);
 
-  // init legacy game
   useEffect(() => {
     if (!rootRef.current) return;
-    const api = initBlackjack(rootRef.current) as BlackjackAPI; // returns { destroy }
-    return () => {
-      if (api && typeof api.destroy === 'function') api.destroy();
-    };
-  }, []);
-
-  // seed the header Bank pill from server credits on open
-  useEffect(() => {
-    (async () => {
-      try {
-        const u = await me();
-        const badge = document.getElementById('bankBadge');
-        if (badge && typeof u?.credits === 'number') {
-          badge.textContent = `Bank: ${u.credits} chips`;
-        }
-      } catch {}
-    })();
+    const teardown = initBlackjack(rootRef.current);
+    return () => teardown?.destroy?.();
   }, []);
 
   function handleBackClick(e: React.MouseEvent) {
@@ -59,7 +39,6 @@ export default function Blackjack({ user, onBack }: Props) {
 
   return (
     <>
-      {/* Header */}
       <header className="header header--app">
         <div className="left user-info">
           <img id="headerAvatar" src="/assets/avatars/1.png" alt="User avatar" />
@@ -76,9 +55,7 @@ export default function Blackjack({ user, onBack }: Props) {
         </div>
       </header>
 
-      {/* Main */}
       <main className="container container--center" ref={rootRef}>
-        {/* (DOM placeholders – legacy script will populate these) */}
         <section className="panel">
           <h2 className="panel-header">Table</h2>
           <p className="panel-subtle">Beat the dealer without going over 21. Blackjack pays 3:2. Dealer stands on 17.</p>
@@ -91,6 +68,7 @@ export default function Blackjack({ user, onBack }: Props) {
                 <div className="score" id="dealerScore">Score: —</div>
               </div>
             </div>
+
             <div className="row">
               <div className="hand">
                 <div className="label">You</div>
