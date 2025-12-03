@@ -86,27 +86,39 @@ a { color: inherit; }
 .page-shell {
   min-height: 100vh;
   width: 100%;
-  padding-top: 80px;          /* space for fixed header */
-  padding-bottom: 60px;       /* space for fixed footer */
+  display: flex;
+  justify-content: center;      /* center inner column horizontally */
+  align-items: flex-start;      /* content starts under header */
+  padding-top: 80px;            /* space for fixed header */
+  padding-bottom: 60px;         /* space for fixed footer */
 }
 
-/* Inner content column – horizontally centered */
+/* Inner content column – centered and narrower than full width */
 .page-shell-inner {
   width: 100%;
-  max-width: 1000px;          /* overall content width (lobby, login, leaderboard) */
-  margin: 0 auto;             /* center the column itself */
+  max-width: 960px;             /* lobby / login column width */
+  margin-left: auto;
+  margin-right: auto;
   padding: 0 var(--space-6);
 }
 
 /* Wider version for the Blackjack table layout */
 .page-shell-inner--wide {
   width: 100%;
-  max-width: 1200px;          /* wide, but still centered */
-  margin: 0 auto;
+  max-width: 1200px;            /* game table width */
+  margin-left: auto;
+  margin-right: auto;
   padding: 0 var(--space-6);
 }
 
-/* Wrapper for login page – perfectly center login-shell (unused currently, but kept) */
+/* HARD OVERRIDE: in case other CSS redefines margin/width */
+.page-shell > .page-shell-inner,
+.page-shell > .page-shell-inner--wide {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Wrapper for login page – perfectly center login-shell if used */
 .login-page-root {
   min-height: 100vh;
   display: flex;
