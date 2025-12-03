@@ -1,9 +1,45 @@
+/* ROOT SHOULD NOT LIMIT WIDTH */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
+
+/* OPTIONAL GLOBAL BASE RESET (helps avoid weird spacing) */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================
+   PAGE LAYOUT HELPERS FOR CENTERED CONTENT
+   ============================================ */
+
+/* Outer wrapper — full width, centers all pages */
+.page-shell {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;  /* horizontally center page content */
+}
+
+/* Inner wrapper — constrains readable width */
+.page-shell-inner {
+  width: 100%;
+  max-width: 1200px;   /* perfect for login + lobby */
+  padding: 0 24px;     /* keep edges clean */
+}
+
+/* Wider version for Blackjack table layout */
+.page-shell-inner--wide {
+  max-width: 1400px;
+}
+
+/* ============================================
+   Existing Vite template styles (kept)
+   ============================================ */
 
 .logo {
   height: 6em;
@@ -19,12 +55,8 @@
 }
 
 @keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
