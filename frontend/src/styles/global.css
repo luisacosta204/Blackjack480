@@ -82,6 +82,25 @@ a { color: inherit; }
 .cluster { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
 .grid { display: grid; gap: var(--space-6); }
 
+/* NEW: page centering shells used by Home, Login, Blackjack */
+.page-shell {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;       /* center inner content horizontally */
+}
+
+.page-shell-inner {
+  width: 100%;
+  max-width: 1200px;             /* good for lobby + login */
+  padding: 0 var(--space-6);     /* same horizontal padding as .container */
+}
+
+/* Wider version for the Blackjack table layout */
+.page-shell-inner--wide {
+  max-width: 1400px;
+}
+
 /***** Responsive grid presets *****/
 .grid.cols-2 { grid-template-columns: 1fr 1fr; }
 .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
