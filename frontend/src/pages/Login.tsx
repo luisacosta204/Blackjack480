@@ -9,7 +9,7 @@ type Props = {
 
 export default function LoginPage({ onAuthed, onGuest }: Props) {
   // login/register toggle
-  const [mode, setMode] = useState<'login'|'register'>('login');
+  const [mode, setMode] = useState<'login' | 'register'>('login');
 
   // form fields
   const [identifier, setIdentifier] = useState(''); // email or username (login)
@@ -25,7 +25,12 @@ export default function LoginPage({ onAuthed, onGuest }: Props) {
   // If already logged in, bounce straight through
   useEffect(() => {
     (async () => {
-      try { await me(); onAuthed(); } catch { /* not logged in */ }
+      try {
+        await me();
+        onAuthed();
+      } catch {
+        /* not logged in */
+      }
     })();
   }, [onAuthed]);
 
@@ -56,163 +61,213 @@ export default function LoginPage({ onAuthed, onGuest }: Props) {
   }
 
   return (
-    <div className="container" style={{display: 'flex', justifyContent: 'center'}}>
-      <main className="login-shell" aria-labelledby="page-title" role="main">
-        {/* Brand / Visual side */}
-        <section className="brand-panel" aria-label="Blackjack 21 branding" style={{padding: 24}}>
-          <div className="brand-grid" aria-hidden="true"></div>
+    <div className="page-shell">
+      <div className="page-shell-inner">
+        <main className="login-shell" aria-labelledby="page-title" role="main">
+          {/* Brand / Visual side */}
+          <section
+            className="brand-panel"
+            aria-label="Blackjack 21 branding"
+            style={{ padding: 24 }}
+          >
+            <div className="brand-grid" aria-hidden="true"></div>
 
-          <div className="logo" role="img" aria-label="Blackjack 21 logo" style={{marginBottom: 20}}>
-            <div className="chip">21</div>
-            <div>
-              <h1 id="page-title" className="logo-title">Blackjack 21</h1>
-              <div className="logo-sub">Play smart. Hit the table.</div>
-            </div>
-          </div>
-
-          <div className="card-fan animate-float" aria-hidden="true">
-            <div className="card is-1">
-              <div className="corner"><span className="pip">A♠</span></div>
-              <div className="center">♠</div>
-              <div className="bottom"><span className="pip">A♠</span></div>
-            </div>
-            <div className="card is-2">
-              <div className="corner"><span className="pip red">K♥</span></div>
-              <div className="center">♥</div>
-              <div className="bottom"><span className="pip red">K♥</span></div>
-            </div>
-            <div className="card is-3">
-              <div className="corner"><span className="pip">J♣</span></div>
-              <div className="center">♣</div>
-              <div className="bottom"><span className="pip">J♣</span></div>
-            </div>
-          </div>
-        </section>
-
-        {/* Login/Register form side */}
-        <section className="panel" aria-label="Login form">
-          <h2 className="panel-header">{mode === 'login' ? 'Welcome back' : 'Create account'}</h2>
-          <p className="panel-subtle">
-            {mode === 'login'
-              ? 'Sign in to your Blackjack 21 account to continue.'
-              : 'Create your Blackjack 21 account.'}
-          </p>
-
-          {/* Status / errors */}
-          {status && (
-            <div className="error" role="alert" aria-live="polite" style={{display: 'block'}}>
-              {status}
-            </div>
-          )}
-
-          <form className="form" onSubmit={handleSubmit} noValidate>
-            {mode === 'login' ? (
-              <>
-                <div className="field">
-                  <label htmlFor="identifier">Email or username</label>
-                  <div className="input-wrap">
-                    <input
-                      id="identifier"
-                      name="identifier"
-                      type="text"
-                      inputMode="email"
-                      autoComplete="username"
-                      placeholder="you@casino.com"
-                      value={identifier}
-                      onChange={e=>setIdentifier(e.target.value)}
-                      required
-                      aria-required="true"
-                    />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="field">
-                  <label htmlFor="username">Username</label>
-                  <div className="input-wrap">
-                    <input
-                      id="username"
-                      name="username"
-                      type="text"
-                      autoComplete="username"
-                      placeholder="playerOne"
-                      value={username}
-                      onChange={e=>setUsername(e.target.value)}
-                      required
-                      aria-required="true"
-                    />
-                  </div>
-                </div>
-
-                <div className="field">
-                  <label htmlFor="email">Email</label>
-                  <div className="input-wrap">
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      placeholder="you@casino.com"
-                      value={email}
-                      onChange={e=>setEmail(e.target.value)}
-                      required
-                      aria-required="true"
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-
-            <div className="field">
-              <label htmlFor="password">Password</label>
-              <div className="input-wrap">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPw ? 'text' : 'password'}
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={e=>setPassword(e.target.value)}
-                  minLength={8}
-                  required
-                  aria-required="true"
-                />
-                <button
-                  className="icon"
-                  type="button"
-                  aria-label={showPw ? 'Hide password' : 'Show password'}
-                  title={showPw ? 'Hide password' : 'Show password'}
-                  onClick={()=>setShowPw(s=>!s)}
-                >
-                  {showPw ? '🙈' : '👁️'}
-                </button>
+            <div
+              className="logo"
+              role="img"
+              aria-label="Blackjack 21 logo"
+              style={{ marginBottom: 20 }}
+            >
+              <div className="chip">21</div>
+              <div>
+                <h1 id="page-title" className="logo-title">
+                  Blackjack 21
+                </h1>
+                <div className="logo-sub">Play smart. Hit the table.</div>
               </div>
             </div>
 
-            <div className="cluster" style={{justifyContent:'space-between'}}>
-              <label className="checkbox">
-                <input type="checkbox" id="remember" name="remember" />
-                <span>Remember me</span>
-              </label>
-
-              {/* You can wire this to a route */}
-              <a className="mutelink" href="#" onClick={(e)=>{e.preventDefault(); setMode(m=>m==='login'?'register':'login');}}>
-                {mode==='login' ? 'Need an account? Register' : 'Have an account? Log in'}
-              </a>
+            <div className="card-fan animate-float" aria-hidden="true">
+              <div className="card is-1">
+                <div className="corner">
+                  <span className="pip">A♠</span>
+                </div>
+                <div className="center">♠</div>
+                <div className="bottom">
+                  <span className="pip">A♠</span>
+                </div>
+              </div>
+              <div className="card is-2">
+                <div className="corner">
+                  <span className="pip red">K♥</span>
+                </div>
+                <div className="center">♥</div>
+                <div className="bottom">
+                  <span className="pip red">K♥</span>
+                </div>
+              </div>
+              <div className="card is-3">
+                <div className="corner">
+                  <span className="pip">J♣</span>
+                </div>
+                <div className="center">♣</div>
+                <div className="bottom">
+                  <span className="pip">J♣</span>
+                </div>
+              </div>
             </div>
+          </section>
 
-            <button className="btn" type="submit" disabled={busy}>
-              {busy ? (mode === 'login' ? 'Signing in…' : 'Creating…') : (mode === 'login' ? 'Sign In' : 'Create Account')}
-            </button>
+          {/* Login/Register form side */}
+          <section className="panel" aria-label="Login form">
+            <h2 className="panel-header">
+              {mode === 'login' ? 'Welcome back' : 'Create account'}
+            </h2>
+            <p className="panel-subtle">
+              {mode === 'login'
+                ? 'Sign in to your Blackjack 21 account to continue.'
+                : 'Create your Blackjack 21 account.'}
+            </p>
 
-            <button className="btn btn-secondary" type="button" onClick={handleGuest}>
-              Continue as Guest
-            </button>
-          </form>
-        </section>
-      </main>
+            {/* Status / errors */}
+            {status && (
+              <div
+                className="error"
+                role="alert"
+                aria-live="polite"
+                style={{ display: 'block' }}
+              >
+                {status}
+              </div>
+            )}
+
+            <form className="form" onSubmit={handleSubmit} noValidate>
+              {mode === 'login' ? (
+                <>
+                  <div className="field">
+                    <label htmlFor="identifier">Email or username</label>
+                    <div className="input-wrap">
+                      <input
+                        id="identifier"
+                        name="identifier"
+                        type="text"
+                        inputMode="email"
+                        autoComplete="username"
+                        placeholder="you@casino.com"
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
+                        required
+                        aria-required="true"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="field">
+                    <label htmlFor="username">Username</label>
+                    <div className="input-wrap">
+                      <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        autoComplete="username"
+                        placeholder="playerOne"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                        aria-required="true"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="email">Email</label>
+                    <div className="input-wrap">
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        placeholder="you@casino.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        aria-required="true"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="field">
+                <label htmlFor="password">Password</label>
+                <div className="input-wrap">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPw ? 'text' : 'password'}
+                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    minLength={8}
+                    required
+                    aria-required="true"
+                  />
+                  <button
+                    className="icon"
+                    type="button"
+                    aria-label={showPw ? 'Hide password' : 'Show password'}
+                    title={showPw ? 'Hide password' : 'Show password'}
+                    onClick={() => setShowPw((s) => !s)}
+                  >
+                    {showPw ? '🙈' : '👁️'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="cluster" style={{ justifyContent: 'space-between' }}>
+                <label className="checkbox">
+                  <input type="checkbox" id="remember" name="remember" />
+                  <span>Remember me</span>
+                </label>
+
+                <a
+                  className="mutelink"
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMode((m) => (m === 'login' ? 'register' : 'login'));
+                  }}
+                >
+                  {mode === 'login'
+                    ? 'Need an account? Register'
+                    : 'Have an account? Log in'}
+                </a>
+              </div>
+
+              <button className="btn" type="submit" disabled={busy}>
+                {busy
+                  ? mode === 'login'
+                    ? 'Signing in…'
+                    : 'Creating…'
+                  : mode === 'login'
+                  ? 'Sign In'
+                  : 'Create Account'}
+              </button>
+
+              <button
+                className="btn btn-secondary"
+                type="button"
+                onClick={handleGuest}
+              >
+                Continue as Guest
+              </button>
+            </form>
+          </section>
+        </main>
+      </div>
     </div>
   );
 }
