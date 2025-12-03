@@ -86,35 +86,27 @@ a { color: inherit; }
 .page-shell {
   min-height: 100vh;
   width: 100%;
-  display: flex;
-  justify-content: center;    /* ⬅ center the column horizontally */
-  align-items: flex-start;    /* keep content starting below the header */
   padding-top: 80px;          /* space for fixed header */
   padding-bottom: 60px;       /* space for fixed footer */
 }
 
-
 /* Inner content column – horizontally centered */
 .page-shell-inner {
-  max-width: 1200px;          /* good for lobby */
+  width: 100%;
+  max-width: 1000px;          /* overall content width (lobby, login, leaderboard) */
   margin: 0 auto;             /* center the column itself */
   padding: 0 var(--space-6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;        /* center children horizontally */
 }
 
 /* Wider version for the Blackjack table layout */
 .page-shell-inner--wide {
-  max-width: 1400px;
+  width: 100%;
+  max-width: 1200px;          /* wide, but still centered */
   margin: 0 auto;
   padding: 0 var(--space-6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;        /* center table + panels horizontally */
 }
 
-/* Wrapper for login page – perfectly center login-shell */
+/* Wrapper for login page – perfectly center login-shell (unused currently, but kept) */
 .login-page-root {
   min-height: 100vh;
   display: flex;
