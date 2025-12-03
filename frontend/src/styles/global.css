@@ -5,12 +5,6 @@
 /*
   Blackjack 21 — Global Stylesheet
   Reuse across pages to keep a consistent casino/blackjack vibe.
-  ------------------------------------------------------------------
-  Usage:
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/style.css">
 */
 
 /* =Root Theme Tokens ------------------------------------------------------ */
@@ -82,18 +76,21 @@ a { color: inherit; }
 .cluster { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
 .grid { display: grid; gap: var(--space-6); }
 
-/* NEW: page centering shells used by Home, Login, Blackjack */
+/* Centered shell used by Home + Blackjack (they render header/footer) */
 .page-shell {
   min-height: 100vh;
   width: 100%;
   display: flex;
-  justify-content: center;       /* center inner content horizontally */
+  justify-content: center;    /* center horizontally */
+  align-items: center;        /* center vertically */
+  padding-top: 80px;          /* space for fixed header */
+  padding-bottom: 60px;       /* space for fixed footer */
 }
 
 .page-shell-inner {
   width: 100%;
-  max-width: 1200px;             /* good for lobby + login */
-  padding: 0 var(--space-6);     /* same horizontal padding as .container */
+  max-width: 1200px;          /* good for lobby */
+  padding: 0 var(--space-6);  /* same horizontal padding as .container */
 }
 
 /* Wider version for the Blackjack table layout */
@@ -101,11 +98,27 @@ a { color: inherit; }
   max-width: 1400px;
 }
 
+/* Wrapper for login page – perfectly center login-shell */
+.login-page-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
 /***** Responsive grid presets *****/
 .grid.cols-2 { grid-template-columns: 1fr 1fr; }
 .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
 @media (max-width: 880px) {
   .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+
+  .login-page-root {
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .login-shell { margin: auto; }
 }
 
 /* =Panels & Surfaces ------------------------------------------------------ */
@@ -227,16 +240,33 @@ label { font-weight: 600; font-size: var(--fs-14); }
 
 /* =Header / Nav ----------------------------------------------------------- */
 .header {
-  position: sticky; top: 0; z-index: 20;
+  position: fixed;
+  top: 0; left: 0; width: 100%; z-index: 40;
   backdrop-filter: blur(8px);
   background: linear-gradient(180deg, rgba(10,15,13,.85), rgba(10,15,13,.4));
   border-bottom: 1px solid var(--border);
+  padding: 12px 30px;
+  display: flex; align-items: center; justify-content: space-between;
 }
 .nav { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4) 0; }
 .nav .left, .nav .right { display: flex; align-items: center; gap: var(--space-4); }
+.header .left { display: flex; align-items: center; gap: var(--space-3); }
+.header .right { position: static; margin-left: auto; }
 
 /* =Footer ---------------------------------------------------------------- */
-.footer { color: var(--muted); font-size: var(--fs-12); padding: var(--space-6) 0; border-top: 1px solid var(--border); }
+.footer {
+  position: fixed;
+  bottom: 10px; left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: fit-content;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  color: var(--muted);
+  font-size: var(--fs-12);
+}
 
 /* =Badges & Chips --------------------------------------------------------- */
 .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: var(--fs-12); border: 1px solid var(--border); background: rgba(255,255,255,.06); }
@@ -260,53 +290,6 @@ label { font-weight: 600; font-size: var(--fs-14); }
 .toast.info { border-color: rgba(255,255,255,.15); }
 .toast.warn { border-color: rgba(226,192,68,.45); background: rgba(226,192,68,.12); }
 .toast.error { border-color: rgba(255,59,48,.35); background: rgba(255,59,48,.12); }
-
-/* Center login-shell perfectly in viewport (login page only) */
-body.page--centered {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-/* Ensure proper stacking when on smaller screens */
-@media (max-width: 880px) {
-  body {
-    align-items: flex-start;
-    padding-top: 40px;
-  }
-  .login-shell { margin: auto; }
-}
-
-/* --- Layout positioning adjustments --- */
-.header {
-  position: fixed;
-  top: 0; left: 0; width: 100%; z-index: 40;
-  background: linear-gradient(180deg, rgba(10,15,13,.85), rgba(10,15,13,.4));
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 30px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.header .left { display: flex; align-items: center; gap: var(--space-3); }
-.header .right { position: static; margin-left: auto; }
-
-/* Keep footer centered at bottom */
-.footer {
-  position: fixed;
-  bottom: 10px; left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  width: fit-content;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-}
-
-/* Add spacing so content doesn't hide behind header/footer */
-body { padding-top: 80px; padding-bottom: 60px; }
 
 /* --- Avatar picker (profile) ------------------------------------------- */
 .avatar-btn {
