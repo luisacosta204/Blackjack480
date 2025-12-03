@@ -81,21 +81,23 @@ a { color: inherit; }
   min-height: 100vh;
   width: 100%;
   display: flex;
-  justify-content: center;    /* center horizontally */
   align-items: center;        /* center vertically */
   padding-top: 80px;          /* space for fixed header */
   padding-bottom: 60px;       /* space for fixed footer */
 }
 
+/* Inner content column – centered like the footer */
 .page-shell-inner {
-  width: 100%;
   max-width: 1200px;          /* good for lobby */
+  margin: 0 auto;             /* center horizontally */
   padding: 0 var(--space-6);  /* same horizontal padding as .container */
 }
 
 /* Wider version for the Blackjack table layout */
 .page-shell-inner--wide {
   max-width: 1400px;
+  margin: 0 auto;             /* center horizontally */
+  padding: 0 var(--space-6);
 }
 
 /* Wrapper for login page – perfectly center login-shell */
