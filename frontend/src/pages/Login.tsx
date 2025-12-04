@@ -63,7 +63,12 @@ export default function LoginPage({ onAuthed, onGuest }: Props) {
   return (
     <div className="page-shell">
       <div className="page-shell-inner">
-        <main className="login-shell" aria-labelledby="page-title" role="main">
+        <main
+          className="login-shell main-shell"
+          aria-labelledby="page-title"
+          role="main"
+        >
+
           {/* Brand / Visual side */}
           <section
             className="brand-panel"
