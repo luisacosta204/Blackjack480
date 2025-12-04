@@ -62,12 +62,16 @@ export default function LoginPage({ onAuthed, onGuest }: Props) {
 
   return (
     <div className="page-shell">
-      {/* Dedicated centered wrapper for auth screen */}
-      <div className="login-page-root">
+      <div className="page-shell-inner">
         <main
-          className="login-shell"
+          className="login-shell main-shell"
           aria-labelledby="page-title"
           role="main"
+          style={{
+            maxWidth: '980px',
+            margin: '60px auto',
+            alignItems: 'stretch'
+          }}
         >
           {/* Brand / Visual side */}
           <section
@@ -272,11 +276,6 @@ export default function LoginPage({ onAuthed, onGuest }: Props) {
             </form>
           </section>
         </main>
-
-        {/* Centered global footer */}
-        <footer className="footer">
-          © 2025 Blackjack 21. All rights reserved.
-        </footer>
       </div>
     </div>
   );
