@@ -3,7 +3,7 @@ import '../styles/global.css';
 import '../styles/header-user.css';
 import '../styles/blackjack.css';
 import { initBlackjack } from '../legacy/blackjack';
-import { reportResult } from '../api/game'; // <— will POST /api/game/result
+import { reportResult } from '../api/game';
 
 type UserLite = { username?: string; email?: string; credits?: number };
 type Props = {
@@ -28,16 +28,15 @@ export default function Blackjack({ user, onBack }: Props) {
     }
   }, [user]);
 
-  // Expose a global hook the legacy game can call to report results
+  // Expose global hook for legacy blackjack reporting
   useEffect(() => {
-    // only report for logged-in users (reportResult itself also checks token)
     (window as any).__bjReportResult = reportResult;
     return () => {
       delete (window as any).__bjReportResult;
     };
   }, []);
 
-  // Boot legacy game
+  // Boot blackjack engine
   useEffect(() => {
     if (!rootRef.current) return;
     const teardown = initBlackjack(rootRef.current);
@@ -51,13 +50,14 @@ export default function Blackjack({ user, onBack }: Props) {
 
   return (
     <div className="page-shell">
-      <div className="page-shell-inner page-shell-inner--wide">
+      {/* Main centered column */}
+      <div className="main-shell">
+
+        {/* Centered fixed header */}
         <header className="header header--app">
           <div className="left user-info">
             <img id="headerAvatar" src="/assets/avatars/1.png" alt="User avatar" />
-            <span id="headerUsername" className="username">
-              {displayName}
-            </span>
+            <span id="headerUsername" className="username">{displayName}</span>
           </div>
 
           <div className="right cluster">
@@ -67,102 +67,60 @@ export default function Blackjack({ user, onBack }: Props) {
             >
               ⮐ Back to Home
             </button>
-            <label htmlFor="deckSelect" className="muted">
-              Deck:
-            </label>
+
+            <label htmlFor="deckSelect" className="muted">Deck:</label>
             <select id="deckSelect" className="select" />
-            <span
-              className="badge"
-              id="bankBadge"
-              title="Your chip balance"
-            />
+
+            <span className="badge" id="bankBadge" title="Your chip balance" />
           </div>
         </header>
 
-        {/* Root container for the legacy blackjack UI */}
-        <main className="container container--center main-shell" ref={rootRef}>
+        {/* Blackjack content */}
+        <main ref={rootRef} className="main-shell" style={{ marginTop: 20 }}>
+          
+          {/* Table panel */}
           <section className="panel">
             <h2 className="panel-header">Table</h2>
             <p className="panel-subtle">
-              Beat the dealer without going over 21. Blackjack pays 3:2. Dealer
-              stands on 17.
+              Beat the dealer without going over 21. Blackjack pays 3:2. Dealer stands on 17.
             </p>
 
             <div className="table-wrap">
               <div className="row">
                 <div className="hand">
                   <div className="label">Dealer</div>
-                  <div
-                    className="cards"
-                    id="dealerCards"
-                    aria-live="polite"
-                  />
-                  <div className="score" id="dealerScore">
-                    Score: —
-                  </div>
+                  <div className="cards" id="dealerCards" aria-live="polite" />
+                  <div className="score" id="dealerScore">Score: —</div>
                 </div>
               </div>
 
               <div className="row">
                 <div className="hand">
                   <div className="label">You</div>
-                  <div
-                    className="cards"
-                    id="playerCards"
-                    aria-live="polite"
-                  />
-                  <div className="score" id="playerScore">
-                    Score: —
-                  </div>
+                  <div className="cards" id="playerCards" aria-live="polite" />
+                  <div className="score" id="playerScore">Score: —</div>
                 </div>
               </div>
             </div>
 
-            <div
-              className="toast info mt-6"
-              id="status"
-              aria-live="polite"
-            >
+            <div className="toast info mt-6" id="status" aria-live="polite">
               Place your bet to begin.
             </div>
           </section>
 
-          <section className="grid cols-2">
+          {/* Betting + Actions */}
+          <section className="grid cols-2" style={{ marginTop: 20 }}>
+            
+            {/* Betting Panel */}
             <div className="panel">
               <h3 className="panel-header">Betting</h3>
-              <p className="panel-subtle">
-                Set wager, number of hands, then Deal.
-              </p>
+              <p className="panel-subtle">Set wager, number of hands, then Deal.</p>
 
               <div className="cluster chip-row">
-                <button
-                  className="chip-btn chip-5"
-                  data-chip="5"
-                  title="+5"
-                >
-                  +5
-                </button>
-                <button
-                  className="chip-btn chip-25"
-                  data-chip="25"
-                  title="+25"
-                >
-                  +25
-                </button>
-                <button
-                  className="chip-btn chip-100"
-                  data-chip="100"
-                  title="+100"
-                >
-                  +100
-                </button>
-                <button
-                  className="btn-ghost btn"
-                  id="clearBetBtn"
-                  title="Clear bet"
-                >
-                  Clear
-                </button>
+                <button className="chip-btn chip-5" data-chip="5">+5</button>
+                <button className="chip-btn chip-25" data-chip="25">+25</button>
+                <button className="chip-btn chip-100" data-chip="100">+100</button>
+                <button className="btn-ghost btn" id="clearBetBtn">Clear</button>
               </div>
 
               <div className="bet-line mt-4">
@@ -171,14 +129,8 @@ export default function Blackjack({ user, onBack }: Props) {
               </div>
 
               <div className="bet-line mt-2">
-                <label htmlFor="handsSelect" className="muted">
-                  Hands:
-                </label>
-                <select
-                  id="handsSelect"
-                  className="select"
-                  defaultValue="1"
-                >
+                <label htmlFor="handsSelect" className="muted">Hands:</label>
+                <select id="handsSelect" className="select" defaultValue="1">
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
@@ -188,77 +140,28 @@ export default function Blackjack({ user, onBack }: Props) {
               </div>
 
               <div className="mt-4 cluster">
-                <button className="btn" id="dealBtn">
-                  Deal
-                </button>
-                <button
-                  className="btn-secondary btn"
-                  id="newRoundBtn"
-                  disabled
-                >
-                  New Round
-                </button>
+                <button className="btn" id="dealBtn">Deal</button>
+                <button className="btn-secondary btn" id="newRoundBtn" disabled>New Round</button>
               </div>
             </div>
 
+            {/* Actions Panel */}
             <div className="panel">
               <h3 className="panel-header">Actions</h3>
-              <p className="panel-subtle">
-                Act on the highlighted hand.
-              </p>
+              <p className="panel-subtle">Act on the highlighted hand.</p>
+
               <div className="cluster action-row">
-                <button
-                  className="btn-secondary btn"
-                  id="hitBtn"
-                  disabled
-                >
-                  Hit
-                </button>
-                <button
-                  className="btn-secondary btn"
-                  id="standBtn"
-                  disabled
-                >
-                  Stand
-                </button>
-                <button
-                  className="btn-secondary btn"
-                  id="doubleBtn"
-                  disabled
-                >
-                  Double
-                </button>
-                <button
-                  className="btn-secondary btn"
-                  id="splitBtn"
-                  disabled
-                >
-                  Split
-                </button>
-                <button
-                  className="btn-secondary btn"
-                  id="insuranceBtn"
-                  disabled
-                >
-                  Take Insurance
-                </button>
-                <button
-                  className="btn-secondary btn"
-                  id="changeDeckBtn"
-                  title="Switch card style"
-                >
-                  Change Deck
-                </button>
-                <button
-                  className="btn-danger btn"
-                  id="resetBankBtn"
-                  title="Reset bank to 500"
-                >
-                  Reset Bank
-                </button>
+                <button className="btn-secondary btn" id="hitBtn" disabled>Hit</button>
+                <button className="btn-secondary btn" id="standBtn" disabled>Stand</button>
+                <button className="btn-secondary btn" id="doubleBtn" disabled>Double</button>
+                <button className="btn-secondary btn" id="splitBtn" disabled>Split</button>
+                <button className="btn-secondary btn" id="insuranceBtn" disabled>Take Insurance</button>
+                <button className="btn-secondary btn" id="changeDeckBtn">Change Deck</button>
+                <button className="btn-danger btn" id="resetBankBtn">Reset Bank</button>
               </div>
+
               <p className="panel-subtle mt-2 shoe-line">
-                <span className="muted">Shoe:</span>{' '}
+                <span className="muted">Shoe:</span>
                 <span id="shoeInfo">—</span>
                 <span className="muted"> | Count:</span>
                 <strong id="countInfo">—</strong>
@@ -270,7 +173,11 @@ export default function Blackjack({ user, onBack }: Props) {
           </section>
         </main>
 
-        <footer className="footer">© 2025 Blackjack 21</footer>
+        {/* Centered global footer */}
+        <footer className="footer">
+          © 2025 Blackjack 21
+        </footer>
+
       </div>
     </div>
   );
