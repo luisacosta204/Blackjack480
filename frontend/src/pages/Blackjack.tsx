@@ -80,7 +80,7 @@ export default function Blackjack({ user, onBack }: Props) {
         </header>
 
         {/* Root container for the legacy blackjack UI */}
-        <main className="container container--center" ref={rootRef}>
+        <main className="container container--center main-shell" ref={rootRef}>
           <section className="panel">
             <h2 className="panel-header">Table</h2>
             <p className="panel-subtle">
