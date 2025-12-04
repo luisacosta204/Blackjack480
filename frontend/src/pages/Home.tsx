@@ -32,6 +32,7 @@ export default function Home({
     <div className="page-shell">
       <div className="page-shell-inner">
         <div
+          className="main-shell"
           style={{
             minHeight: '70vh',
             display: 'flex',
@@ -39,6 +40,7 @@ export default function Home({
             justifyContent: 'space-between'
           }}
         >
+
           {/* Header bar */}
           <header className="header" style={{ position: 'static', width: '100%' }}>
             <div className="left user-info">
