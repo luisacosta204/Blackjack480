@@ -56,7 +56,11 @@ body {
   font-family: var(--font-sans);
   color: var(--ink);
   background: radial-gradient(1200px 800px at 20% 20%, var(--felt-2), var(--bg));
+  /* space so fixed header/footer don't overlap content */
+  padding-top: 80px;
+  padding-bottom: 60px;
 }
+
 img, svg { display: block; max-width: 100%; }
 button { font: inherit; }
 a { color: inherit; }
