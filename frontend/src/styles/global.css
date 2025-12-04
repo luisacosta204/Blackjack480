@@ -56,8 +56,7 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   color: var(--ink);
-  background: radial-gradient(1200px 800px at 20% 20%, var(--felt-2), var(--bg));
-  /* space so fixed header/footer don't overlap content */
+  background: radial-gradient(1200px 800px at 50% 50%, var(--felt-2), var(--bg));
   padding-top: 80px;
   padding-bottom: 60px;
 }
