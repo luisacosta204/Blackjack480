@@ -447,14 +447,6 @@ main.container.stack > .grid.cols-2 .panel-header {
     padding: 0 16px;
 }
 
-/* Sticky, blurred app header like your teammate’s */
-.header.header--app {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    backdrop-filter: blur(6px);
-}
-
 /* Ensure the two panels render as actual columns (and collapse nicely) */
 .grid.cols-2 {
     display: grid;
@@ -545,3 +537,4 @@ main.container.stack > .grid.cols-2 .panel-header {
     font-weight: 700;
     white-space: nowrap;
 }
+
