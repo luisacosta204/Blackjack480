@@ -40,14 +40,10 @@ export default function Home({
             justifyContent: 'space-between'
           }}
         >
-          {/* Header bar */}
-          <header className="header" style={{ position: 'static', width: '100%' }}>
+          {/* Header bar — use global .header styles */}
+          <header className="header">
             <div className="left user-info">
-              <img
-                id="headerAvatar"
-                src="/assets/avatars/1.png"
-                alt="User avatar"
-              />
+              <img id="headerAvatar" src="/assets/avatars/1.png" alt="User avatar" />
               <span className="username">{displayName}</span>
               {typeof user?.credits === 'number' && (
                 <span className="badge" style={{ marginLeft: 8 }}>
@@ -65,14 +61,8 @@ export default function Home({
             </div>
           </header>
 
-          {/* Main hero — explicitly centered and narrowed */}
-          <main
-            style={{
-              textAlign: 'center',
-              maxWidth: '640px',
-              margin: '60px auto 0'
-            }}
-          >
+          {/* Main hero */}
+          <main className="home-main" style={{ marginTop: 40 }}>
             <h1 className="panel-header" style={{ marginBottom: 8 }}>
               Welcome to the Casino Lobby
             </h1>
@@ -80,10 +70,7 @@ export default function Home({
               Choose a game mode or view your stats below.
             </p>
 
-            <div
-              className="cluster"
-              style={{ justifyContent: 'center', marginBottom: 20 }}
-            >
+            <div className="cluster" style={{ justifyContent: 'center', marginBottom: 20 }}>
               <button className="btn" onClick={onPlayBlackjack}>
                 Play Blackjack
               </button>
