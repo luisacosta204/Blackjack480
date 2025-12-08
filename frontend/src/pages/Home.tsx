@@ -1,3 +1,4 @@
+// frontend/src/pages/Home.tsx
 import '../styles/global.css';
 import '../styles/header-user.css';
 import { useEffect, useState } from 'react';
@@ -14,8 +15,10 @@ export default function Home({
   onViewProfile?: () => void;
 }) {
   const [displayName, setDisplayName] = useState('Guest');
+  const [avatarSrc, setAvatarSrc] = useState('/assets/avatars/1.png');
 
   useEffect(() => {
+    // username logic
     if (user?.username) {
       setDisplayName(user.username);
       localStorage.setItem('bj21.username', user.username);
@@ -25,53 +28,83 @@ export default function Home({
       localStorage.setItem('bj21.username', name);
       setDisplayName(name);
     }
+
+    // avatar logic
+    const savedAvatar = localStorage.getItem('bj21.avatar');
+    if (savedAvatar) {
+      setAvatarSrc(savedAvatar);
+    } else {
+      setAvatarSrc('/assets/avatars/1.png');
+    }
   }, [user]);
 
   return (
-    <div className="home-page-root">
-      
-      {/* Centered fixed header */}
-      <header className="header">
-        <div className="left user-info">
-          <img id="headerAvatar" src="/assets/avatars/1.png" alt="User avatar" />
-          <span className="username">{displayName}</span>
-          {typeof user?.credits === 'number' && (
-            <span className="badge" style={{ marginLeft: 8 }}>
-              Bank: {user.credits} chips
-            </span>
-          )}
-        </div>
+    <div className="page-shell home-page-root">
+      <div className="page-shell-inner">
+        <header className="header">
+          <div className="left user-info">
+            <img
+              id="headerAvatar"
+              src={avatarSrc}
+              alt="User avatar"
+            />
+            <span className="username">{displayName}</span>
+            {typeof user?.credits === 'number' && (
+              <span className="badge" style={{ marginLeft: 8 }}>
+                Bank: {user.credits} chips
+              </span>
+            )}
+          </div>
+          <div className="right cluster">
+            <button
+              className="btn-secondary btn"
+              onClick={() => onViewProfile?.()}
+            >
+              Profile
+            </button>
+          </div>
+        </header>
 
-        <div className="right cluster">
-          <button className="btn-secondary btn" onClick={() => onViewProfile?.()}>
-            Profile
-          </button>
-        </div>
-      </header>
+        <main className="home-content">
+          <h1 className="panel-header" style={{ marginBottom: 8 }}>
+            Welcome to the Casino Lobby
+          </h1>
+          <p className="panel-subtle" style={{ marginBottom: 24 }}>
+            Choose a game mode or view your stats below.
+          </p>
 
-      {/* Centered main content */}
-      <main className="home-content">
-        <h1 className="panel-header" style={{ marginBottom: 8 }}>
-          Welcome to the Casino Lobby
-        </h1>
+          <div
+            className="cluster"
+            style={{ justifyContent: 'center', marginBottom: 20 }}
+          >
+            <button className="btn" onClick={onPlayBlackjack}>
+              Play Blackjack
+            </button>
+            <button className="btn btn-secondary" disabled>
+              Coming Soon
+            </button>
+          </div>
 
-        <p className="panel-subtle" style={{ marginBottom: 24 }}>
-          Choose a game mode or view your stats below.
-        </p>
+          <div className="stack" style={{ justifyItems: 'center', gap: 12 }}>
+            <button
+              className="btn btn-secondary"
+              onClick={onViewLeaderboard}
+            >
+              View Leaderboards
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => onViewProfile?.()}
+            >
+              View Profile
+            </button>
+          </div>
+        </main>
 
-        <div className="cluster" style={{ justifyContent: 'center', marginBottom: 20 }}>
-          <button className="btn" onClick={onPlayBlackjack}>Play Blackjack</button>
-          <button className="btn btn-secondary" disabled>Coming Soon</button>
-        </div>
-
-        <div className="stack" style={{ justifyItems: 'center', gap: 12 }}>
-          <button className="btn btn-secondary" onClick={onViewLeaderboard}>View Leaderboards</button>
-          <button className="btn btn-secondary" onClick={() => onViewProfile?.()}>View Profile</button>
-        </div>
-      </main>
-
-      {/* Centered footer */}
-      <footer className="footer">© 2025 Blackjack 21. All rights reserved.</footer>
+        <footer className="footer">
+          © 2025 Blackjack 21. All rights reserved.
+        </footer>
+      </div>
     </div>
   );
 }
