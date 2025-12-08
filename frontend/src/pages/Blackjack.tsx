@@ -12,13 +12,12 @@ type Props = {
 };
 
 export default function Blackjack({ user, onBack }: Props) {
+  // 👇 rootRef now points to the wrapper that contains header + main
   const rootRef = useRef<HTMLDivElement>(null);
   const [displayName, setDisplayName] = useState('Guest');
-  const [avatarSrc, setAvatarSrc] = useState('/assets/avatars/1.png');
 
-  // Keep the header name + avatar in sync
+  // Keep the header name in sync
   useEffect(() => {
-    // name
     if (user?.username) {
       setDisplayName(user.username);
       localStorage.setItem('bj21.username', user.username);
@@ -27,14 +26,6 @@ export default function Blackjack({ user, onBack }: Props) {
       const name = stored || `Guest_${Math.floor(1000 + Math.random() * 9000)}`;
       setDisplayName(name);
       localStorage.setItem('bj21.username', name);
-    }
-
-    // avatar
-    const savedAvatar = localStorage.getItem('bj21.avatar');
-    if (savedAvatar) {
-      setAvatarSrc(savedAvatar);
-    } else {
-      setAvatarSrc('/assets/avatars/1.png');
     }
   }, [user]);
 
@@ -60,14 +51,14 @@ export default function Blackjack({ user, onBack }: Props) {
 
   return (
     <div className="page-shell blackjack-page-root">
-      <div className="page-shell-inner page-shell-inner--wide blackjack-content">
+      {/* 👇 ref moved here */}
+      <div
+        className="page-shell-inner page-shell-inner--wide blackjack-content"
+        ref={rootRef}
+      >
         <header className="header header--app">
           <div className="left user-info">
-            <img
-              id="headerAvatar"
-              src={avatarSrc}
-              alt="User avatar"
-            />
+            <img id="headerAvatar" src="/assets/avatars/1.png" alt="User avatar" />
             <span id="headerUsername" className="username">
               {displayName}
             </span>
@@ -83,6 +74,7 @@ export default function Blackjack({ user, onBack }: Props) {
             <label htmlFor="deckSelect" className="muted">
               Deck:
             </label>
+            {/* legacy code will now find & populate this */}
             <select id="deckSelect" className="select" />
             <span
               className="badge"
@@ -93,7 +85,8 @@ export default function Blackjack({ user, onBack }: Props) {
         </header>
 
         {/* Root container for the legacy blackjack UI */}
-        <main className="container container--center main-shell" ref={rootRef}>
+        {/* 👇 ref removed from here */}
+        <main className="container container--center main-shell">
           <section className="panel">
             <h2 className="panel-header">Table</h2>
             <p className="panel-subtle">
