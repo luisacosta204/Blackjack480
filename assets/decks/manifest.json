@@ -6,8 +6,13 @@
       "name": "Style 1 (Images)"
     },
     {
+      "id": "style_2",
+      "name": "Style 2 (Colorful)"
+    },
+    {
       "id": "text",
       "name": "Text Only"
     }
   ]
 }
+
