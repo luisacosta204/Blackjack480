@@ -545,4 +545,53 @@ main.container.stack > .grid.cols-2 .panel-header {
     white-space: nowrap;
 }
 
+/* ===== Force blackjack layout into the horizontal center ===== */
+
+/* Center the main blackjack container itself */
+main.container,
+main.container.container--center.main-shell,
+main.container.stack {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* center children horizontally */
+  gap: var(--space-6, 24px);
+}
+
+/* Center the top "Table" panel */
+main.container > .panel,
+main.container.container--center.main-shell > .panel,
+main.container.stack > .panel {
+  /* let it size to its content but keep a sensible max width */
+  width: auto;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Center the Betting + Actions row as a group */
+main.container > .grid.cols-2,
+main.container.container--center.main-shell > .grid.cols-2,
+main.container.stack > .grid.cols-2 {
+  display: grid;
+  grid-template-columns: auto auto;  /* columns hug their panels */
+  justify-content: center;           /* center the pair as a group */
+  gap: 16px;
+  width: 100%;
+}
+
+/* On smaller screens, stack them but keep centered */
+@media (max-width: 920px) {
+  main.container > .grid.cols-2,
+  main.container.container--center.main-shell > .grid.cols-2,
+  main.container.stack > .grid.cols-2 {
+    grid-template-columns: 1fr;
+    justify-content: center;
+  }
+}
+
+
+
 
