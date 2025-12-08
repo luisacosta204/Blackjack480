@@ -134,6 +134,37 @@ a {
   margin: 0 auto;
 }
 
+/* === Home Page Root (centers everything) === */
+.home-page-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Home main content column */
+.home-content {
+  width: 100%;
+  max-width: 700px;
+  margin: 120px auto 0; /* pushes content below fixed header */
+  text-align: center;
+}
+
+/* === Blackjack Page Root (centers everything) === */
+.blackjack-page-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Blackjack content area */
+.blackjack-content {
+  width: 100%;
+  max-width: 1300px;   /* wide enough for table + sidepanels */
+  margin: 120px auto 0;
+}
+
 /* Home hero layout: center text + buttons */
 .home-main {
   display: flex;
