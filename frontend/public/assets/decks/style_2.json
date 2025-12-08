@@ -1,6 +1,6 @@
 {
   "name": "style_2",
-  "path": "assets/decks/style_2/",
+  "path": "/assets/decks/style_2/",
   "cards": {
     "A♠": "Ace of Spades.png",
     "A♥": "Ace of Hearts.png",
@@ -66,7 +66,6 @@
     "K♥": "King of Hearts.png",
     "K♦": "King of Diamonds.png",
     "K♣": "King of Clubs.png"
-
   },
   "back": "Back.png"
 }
