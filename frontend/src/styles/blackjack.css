@@ -5,34 +5,47 @@
    - Compact vertical rhythm on short screens
 */
 
-/* === Layout: keep everything inside the viewport === */
-html, body {
+/* === Layout: center everything in the viewport === */
+html,
+body {
     height: 100%;
 }
 
-main.container.stack {
-    /* Fill the usable viewport and stack: [Table (flexes)] + [Controls] */
-    min-height: 100svh;
-    display: grid;
-    grid-template-rows: 1fr auto;
+/* Works for both main variants:
+   - <main class="container stack">
+   - <main class="container container--center main-shell">
+*/
+main.container.stack,
+main.container.container--center.main-shell {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+
+    /* Fill most of the viewport but leave room for global header/footer padding */
+    min-height: calc(100vh - 160px);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;        /* horizontal centering */
+    justify-content: center;    /* vertical centering */
     gap: var(--space-6, 24px);
+    padding: 0 16px;
 }
 
-/* === Stick Actions panel to bottom === */
+/* === OLD sticky Actions panel (disabled for centered layout) ===
 main.container.stack > .grid.cols-2 {
     position: sticky;
     bottom: 0;
     z-index: 10;
-    background: var(--panel, rgba(0, 0, 0, 0.6)); /* translucent backdrop for clarity */
+    background: var(--panel, rgba(0, 0, 0, 0.6)); 
     backdrop-filter: blur(8px);
     padding: var(--space-4, 16px) var(--space-6, 24px);
     border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
     margin-top: auto;
 }
 
-/* Keep inner panels aligned and compact */
 main.container.stack > .grid.cols-2 .panel {
-    background: transparent; /* inherit sticky backdrop */
+    background: transparent; 
     box-shadow: none;
     margin: 0;
     padding: 0;
@@ -41,6 +54,7 @@ main.container.stack > .grid.cols-2 .panel {
 main.container.stack > .grid.cols-2 .panel-header {
     margin-bottom: 4px;
 }
+*/
 
 
 /* The felt/table takes remaining space inside the table panel */
@@ -152,6 +166,10 @@ main.container.stack > .grid.cols-2 .panel-header {
     padding: 10px;
     position: relative;
     user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .card-ui .corner {
@@ -334,19 +352,7 @@ main.container.stack > .grid.cols-2 .panel-header {
     }
 }
 
-.player-hands[data-hands="2"] .player-hand:not(.active),
-.player-hands[data-hands="3"] .player-hand:not(.active) {
-    margin-block: 4px;
-}
-
 /* make image faces fill the card */
-.card-ui {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
 .card-img {
     width: 100%;
     height: 100%;
@@ -392,6 +398,7 @@ main.container.stack > .grid.cols-2 .panel-header {
 #countLabel {
     font-weight: 700;
 }
+
 /* ==== Hi-Lo readout under Shoe ==== */
 #countInfo {
     display: inline-block;
@@ -537,4 +544,5 @@ main.container.stack > .grid.cols-2 .panel-header {
     font-weight: 700;
     white-space: nowrap;
 }
+
 
