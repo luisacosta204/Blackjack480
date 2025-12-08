@@ -1,4 +1,3 @@
-// frontend/src/pages/Home.tsx
 import '../styles/global.css';
 import '../styles/header-user.css';
 import { useEffect, useState } from 'react';
@@ -29,77 +28,50 @@ export default function Home({
   }, [user]);
 
   return (
-    <div className="page-shell">
-      <div className="page-shell-inner">
-        <div
-          className="main-shell"
-          style={{
-            minHeight: '70vh',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
-          }}
-        >
-          {/* Header bar — use global .header styles */}
-          <header className="header">
-            <div className="left user-info">
-              <img id="headerAvatar" src="/assets/avatars/1.png" alt="User avatar" />
-              <span className="username">{displayName}</span>
-              {typeof user?.credits === 'number' && (
-                <span className="badge" style={{ marginLeft: 8 }}>
-                  Bank: {user.credits} chips
-                </span>
-              )}
-            </div>
-            <div className="right cluster">
-              <button
-                className="btn-secondary btn"
-                onClick={() => onViewProfile?.()}
-              >
-                Profile
-              </button>
-            </div>
-          </header>
-
-          {/* Main hero */}
-          <main className="home-main" style={{ marginTop: 40 }}>
-            <h1 className="panel-header" style={{ marginBottom: 8 }}>
-              Welcome to the Casino Lobby
-            </h1>
-            <p className="panel-subtle" style={{ marginBottom: 24 }}>
-              Choose a game mode or view your stats below.
-            </p>
-
-            <div className="cluster" style={{ justifyContent: 'center', marginBottom: 20 }}>
-              <button className="btn" onClick={onPlayBlackjack}>
-                Play Blackjack
-              </button>
-              <button className="btn btn-secondary" disabled>
-                Coming Soon
-              </button>
-            </div>
-
-            <div className="stack" style={{ justifyItems: 'center', gap: 12 }}>
-              <button
-                className="btn btn-secondary"
-                onClick={onViewLeaderboard}
-              >
-                View Leaderboards
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => onViewProfile?.()}
-              >
-                View Profile
-              </button>
-            </div>
-          </main>
-
-          <footer className="footer">
-            © 2025 Blackjack 21. All rights reserved.
-          </footer>
+    <div className="home-page-root">
+      
+      {/* Centered fixed header */}
+      <header className="header">
+        <div className="left user-info">
+          <img id="headerAvatar" src="/assets/avatars/1.png" alt="User avatar" />
+          <span className="username">{displayName}</span>
+          {typeof user?.credits === 'number' && (
+            <span className="badge" style={{ marginLeft: 8 }}>
+              Bank: {user.credits} chips
+            </span>
+          )}
         </div>
-      </div>
+
+        <div className="right cluster">
+          <button className="btn-secondary btn" onClick={() => onViewProfile?.()}>
+            Profile
+          </button>
+        </div>
+      </header>
+
+      {/* Centered main content */}
+      <main className="home-content">
+        <h1 className="panel-header" style={{ marginBottom: 8 }}>
+          Welcome to the Casino Lobby
+        </h1>
+
+        <p className="panel-subtle" style={{ marginBottom: 24 }}>
+          Choose a game mode or view your stats below.
+        </p>
+
+        <div className="cluster" style={{ justifyContent: 'center', marginBottom: 20 }}>
+          <button className="btn" onClick={onPlayBlackjack}>Play Blackjack</button>
+          <button className="btn btn-secondary" disabled>Coming Soon</button>
+        </div>
+
+        <div className="stack" style={{ justifyItems: 'center', gap: 12 }}>
+          <button className="btn btn-secondary" onClick={onViewLeaderboard}>View Leaderboards</button>
+          <button className="btn btn-secondary" onClick={() => onViewProfile?.()}>View Profile</button>
+        </div>
+      </main>
+
+      {/* Centered footer */}
+      <footer className="footer">© 2025 Blackjack 21. All rights reserved.</footer>
     </div>
   );
 }
