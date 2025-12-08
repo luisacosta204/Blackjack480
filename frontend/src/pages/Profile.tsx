@@ -14,8 +14,8 @@ const AVATARS = [
   '/assets/avatars/Flower.png',
   '/assets/avatars/Hot Streak.png',
   '/assets/avatars/robot.png',
-  '/assets/avatars/silly_cat.png'
-  '/assets/avatars/Dollarydoos.png'
+  '/assets/avatars/silly_cat.png',
+  '/assets/avatars/Dollarydoos.png',
   '/assets/avatars/galaxy_spade.png'
 ];
 
