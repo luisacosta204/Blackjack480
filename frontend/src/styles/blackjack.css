@@ -592,6 +592,36 @@ main.container.stack > .grid.cols-2 {
   }
 }
 
+/* === Center the Blackjack layout horizontally === */
+
+main.container.container--center.main-shell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;             /* center children horizontally */
+    gap: var(--space-6, 24px);
+}
+
+/* Center the top Table panel and the bottom Betting/Actions section */
+main.container.container--center.main-shell > .panel,
+main.container.container--center.main-shell > .grid.cols-2 {
+    width: 100%;
+    max-width: 960px;                /* tweak this number to your taste */
+    margin: 0 auto;                  /* center inside main */
+}
+
+/* Ensure Betting + Actions stay as two centered columns on wide screens */
+main.container.container--center.main-shell > .grid.cols-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 920px) {
+    main.container.container--center.main-shell > .grid.cols-2 {
+        grid-template-columns: 1fr;  /* stack on narrow screens */
+    }
+}
+
 
 
 
