@@ -5,51 +5,43 @@
    - Compact vertical rhythm on short screens
 */
 
-/* === Layout: center blackjack area in the viewport === */
-html,
-body {
+/* === Layout: keep everything inside the viewport === */
+html, body {
     height: 100%;
 }
 
 main.container.stack {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-
-    /* Fill most of the viewport but leave room for global header/footer padding */
-    min-height: calc(100vh - 140px);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;           /* horizontal centering */
-    justify-content: center;       /* vertical centering */
+    /* Fill the usable viewport and stack: [Table (flexes)] + [Controls] */
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: 1fr auto;
     gap: var(--space-6, 24px);
-    padding: 0 var(--space-6, 24px);
 }
 
-/* (Sticky bottom block removed)
-main.container.stack > .grid.cols-2 {
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-    background: var(--panel, rgba(0, 0, 0, 0.6)); 
-    backdrop-filter: blur(8px);
-    padding: var(--space-4, 16px) var(--space-6, 24px);
-    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-    margin-top: auto;
-}
+    /* === Stick Actions panel to bottom === */
+    main.container.stack > .grid.cols-2 {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        background: var(--panel, rgba(0, 0, 0, 0.6)); /* translucent backdrop for clarity */
+        backdrop-filter: blur(8px);
+        padding: var(--space-4, 16px) var(--space-6, 24px);
+        border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+        margin-top: auto;
+    }
 
-main.container.stack > .grid.cols-2 .panel {
-    background: transparent; 
-    box-shadow: none;
-    margin: 0;
-    padding: 0;
-}
+        /* Keep inner panels aligned and compact */
+        main.container.stack > .grid.cols-2 .panel {
+            background: transparent; /* inherit sticky backdrop */
+            box-shadow: none;
+            margin: 0;
+            padding: 0;
+        }
 
-main.container.stack > .grid.cols-2 .panel-header {
-    margin-bottom: 4px;
-}
-*/
+        main.container.stack > .grid.cols-2 .panel-header {
+            margin-bottom: 4px;
+        }
+
 
 /* The felt/table takes remaining space inside the table panel */
 .table-wrap {
@@ -63,15 +55,15 @@ main.container.stack > .grid.cols-2 .panel-header {
     overflow: hidden; /* keep cards inside when we scale */
 }
 
-.table-wrap::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
-    background-size: 20px 20px;
-    mask-image: radial-gradient(70% 70% at 50% 40%, black, transparent);
-}
+    .table-wrap::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+        background-size: 20px 20px;
+        mask-image: radial-gradient(70% 70% at 50% 40%, black, transparent);
+    }
 
 .row {
     display: grid;
@@ -140,13 +132,13 @@ main.container.stack > .grid.cols-2 .panel-header {
     transition: box-shadow .2s ease;
 }
 
-.player-hand.active {
-    box-shadow: 0 0 0 3px rgba(61,255,155,.35), var(--shadow-lg, 0 8px 30px rgba(0,0,0,.28));
-}
+    .player-hand.active {
+        box-shadow: 0 0 0 3px rgba(61,255,155,.35), var(--shadow-lg, 0 8px 30px rgba(0,0,0,.28));
+    }
 
-.player-hand.finished {
-    opacity: .88;
-}
+    .player-hand.finished {
+        opacity: .88;
+    }
 
 /* === Card visuals === */
 .card-ui {
@@ -160,49 +152,35 @@ main.container.stack > .grid.cols-2 .panel-header {
     padding: 10px;
     position: relative;
     user-select: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
 }
 
-.card-ui .corner {
-    font-weight: 700;
-    font-size: 16px;
-}
+    .card-ui .corner {
+        font-weight: 700;
+        font-size: 16px;
+    }
 
-.card-ui .center {
-    display: grid;
-    place-items: center;
-    font-size: calc(var(--card-w) * 0.38);
-}
+    .card-ui .center {
+        display: grid;
+        place-items: center;
+        font-size: calc(var(--card-w) * 0.38);
+    }
 
-.card-ui .red {
-    color: #d22525;
-}
+    .card-ui .red {
+        color: #d22525;
+    }
 
-.card-ui.back {
-    background: linear-gradient(135deg,#1b1f1d,#0a0f0d);
-    border: 1px solid var(--border-strong, rgba(255,255,255,.15));
-    display: grid;
-    place-items: center;
-}
+    .card-ui.back {
+        background: linear-gradient(135deg,#1b1f1d,#0a0f0d);
+        border: 1px solid var(--border-strong, rgba(255,255,255,.15));
+        display: grid;
+        place-items: center;
+    }
 
-.card-ui.back::after {
-    content: "★";
-    opacity: .5;
-    font-size: 28px;
-}
-
-/* make image faces fill the card */
-.card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: inherit;
-    user-select: none;
-    pointer-events: none;
-}
+        .card-ui.back::after {
+            content: "★";
+            opacity: .5;
+            font-size: 28px;
+        }
 
 /* === Chips / betting === */
 .chip-btn {
@@ -234,9 +212,9 @@ main.container.stack > .grid.cols-2 .panel-header {
     align-items: baseline;
 }
 
-.bet-line .muted {
-    color: var(--muted, #9aa4a8);
-}
+    .bet-line .muted {
+        color: var(--muted, #9aa4a8);
+    }
 
 .select {
     padding: 8px 10px;
@@ -254,6 +232,7 @@ main.container.stack > .grid.cols-2 .panel-header {
 .header label.muted {
     margin: 0 6px 0 4px;
 }
+
 
 /* Header badge */
 #bankBadge {
@@ -306,22 +285,21 @@ main.container.stack > .grid.cols-2 .panel-header {
 .player-hands[data-hands="3"] .player-hand:not(.active) {
     opacity: 0.8;
     filter: saturate(0.85);
-    margin-block: 4px;
 }
 
-.player-hands[data-hands="2"] .player-hand:not(.active) .card-ui,
-.player-hands[data-hands="3"] .player-hand:not(.active) .card-ui {
-    width: calc(var(--card-w) * 0.85);
-    height: calc(var(--card-h) * 0.85);
-}
+    .player-hands[data-hands="2"] .player-hand:not(.active) .card-ui,
+    .player-hands[data-hands="3"] .player-hand:not(.active) .card-ui {
+        width: calc(var(--card-w) * 0.85);
+        height: calc(var(--card-h) * 0.85);
+    }
 
-.player-hands[data-hands="2"] .player-hand:not(.active) .cards {
-    gap: calc(var(--card-gap) * 0.8);
-}
+    .player-hands[data-hands="2"] .player-hand:not(.active) .cards {
+        gap: calc(var(--card-gap) * 0.8);
+    }
 
-.player-hands[data-hands="3"] .player-hand:not(.active) .cards {
-    gap: calc(var(--card-gap) * 0.7);
-}
+    .player-hands[data-hands="3"] .player-hand:not(.active) .cards {
+        gap: calc(var(--card-gap) * 0.7);
+    }
 
 .player-hand.active {
     opacity: 1;
@@ -329,9 +307,25 @@ main.container.stack > .grid.cols-2 .panel-header {
     z-index: 2;
 }
 
+/* Maintain spacing balance */
+.player-hands[data-hands="2"] .player-hand:not(.active),
+.player-hands[data-hands="3"] .player-hand:not(.active) {
+    margin-block: 4px;
+}
+
 /* Smooth transitions when changing active hand */
 .player-hand {
     transition: opacity 0.25s ease, filter 0.25s ease;
+}
+
+
+/* Tighten internal spacing for shrunken hands */
+.player-hands[data-hands="2"] .player-hand:not(.active) .cards {
+    gap: calc(var(--card-gap) * .8);
+}
+
+.player-hands[data-hands="3"] .player-hand:not(.active) .cards {
+    gap: calc(var(--card-gap) * .7);
 }
 
 /* Motion-friendly: respect reduced motion */
@@ -340,6 +334,29 @@ main.container.stack > .grid.cols-2 .panel-header {
         transition: none !important;
     }
 }
+
+.player-hands[data-hands="2"] .player-hand:not(.active),
+.player-hands[data-hands="3"] .player-hand:not(.active) {
+    margin-block: 4px;
+}
+
+/* make image faces fill the card */
+.card-ui {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: inherit;
+    user-select: none;
+    pointer-events: none;
+}
+
 
 /* Back button styled like in-game buttons, aligned right */
 .back-button {
@@ -356,10 +373,10 @@ main.container.stack > .grid.cols-2 .panel-header {
     margin-right: 10px;
 }
 
-.back-button:hover {
-    background: var(--btn-bg-hover, linear-gradient(180deg, #3c4449, #23282b));
-    transform: scale(1.05);
-}
+    .back-button:hover {
+        background: var(--btn-bg-hover, linear-gradient(180deg, #3c4449, #23282b));
+        transform: scale(1.05);
+    }
 
 /* Keeps header items vertically centered */
 .header .right.cluster {
@@ -374,6 +391,9 @@ main.container.stack > .grid.cols-2 .panel-header {
     font-size: 14px;
 }
 
+#countLabel {
+    font-weight: 700;
+}
 /* ==== Hi-Lo readout under Shoe ==== */
 #countInfo {
     display: inline-block;
@@ -390,21 +410,21 @@ main.container.stack > .grid.cols-2 .panel-header {
     opacity: 0.95;
 }
 
-/* Color states driven by data-state set in JS */
-#countLabel[data-state="Hot"] {
-    color: #3dff9b; /* minty green */
-    text-shadow: 0 0 12px rgba(61, 255, 155, 0.35);
-}
+    /* Color states driven by data-state set in JS */
+    #countLabel[data-state="Hot"] {
+        color: #3dff9b; /* minty green */
+        text-shadow: 0 0 12px rgba(61, 255, 155, 0.35);
+    }
 
-#countLabel[data-state="Cold"] {
-    color: #ff3b30; /* casino red */
-    text-shadow: 0 0 12px rgba(255, 59, 48, 0.30);
-}
+    #countLabel[data-state="Cold"] {
+        color: #ff3b30; /* casino red */
+        text-shadow: 0 0 12px rgba(255, 59, 48, 0.30);
+    }
 
-#countLabel[data-state="Neutral"] {
-    color: var(--muted, #9aa4a8); /* matches your muted text */
-    text-shadow: none;
-}
+    #countLabel[data-state="Neutral"] {
+        color: var(--muted, #9aa4a8); /* matches your muted text */
+        text-shadow: none;
+    }
 
 /* Small spacing polish for the whole line */
 .panel-subtle .muted + #shoeInfo + .muted {
@@ -417,5 +437,3 @@ main.container.stack > .grid.cols-2 .panel-header {
         content: "• ";
     }
 }
-
-
