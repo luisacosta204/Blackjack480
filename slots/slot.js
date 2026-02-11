@@ -12,7 +12,7 @@ console.log('[SLOTS] build=dev1');
 
   const reelEls = [ 'reel1', 'reel2', 'reel3' ].map(id => document.getElementById(id));
 
-  const chipButtons = document.querySelectorAll('.chip-btn');
+  const chipButtons = document.querySelectorAll('.chip-btn[data-chip]');
   const clearBetBtn = document.getElementById('clearBetBtn');
   const spinBtn = document.getElementById('spinBtn');
   const maxBetBtn = document.getElementById('maxBetBtn');
@@ -321,10 +321,39 @@ console.log('[SLOTS] build=dev1');
 
   function updateBetLabel() { betAmountEl.textContent = bet; }
 
-  function updateBankBadge() {
-    bankBadgeEl.textContent = `Bank: ${bank} chips`;
-    bankBadgeEl.className = 'badge';
-  }
+    function updateBankBadge() {
+        bankBadgeEl.className = 'badge';
+        bankBadgeEl.setAttribute("aria-label", `Bank: ${bank} chips`);
+        bankBadgeEl.textContent = String(bank);
+
+        // Match Blackjack tiered chip icon behavior
+        updateChipIcon(bank);
+    }
+
+    // Same tier logic you already use in blackjack.js
+    function chipUrlForBank(bankAmount) {
+        if (bankAmount < 750) return "../assets/images/chip-chip.png";
+        const tier = Math.floor((bankAmount - 750) / 250);
+
+        const tierImages = [
+            "../assets/images/chip-750.png",
+            "../assets/images/chip-1000.png",
+            "../assets/images/chip-1250.png",
+            "../assets/images/chip-1500.png",
+            "../assets/images/chip-1750.png",
+            "../assets/images/chip-2000.png",
+            "../assets/images/chip-2250.png"
+        ];
+
+        const idx = Math.min(tier, tierImages.length - 1);
+        return tierImages[idx];
+    }
+
+    function updateChipIcon(bankAmount) {
+        const url = chipUrlForBank(bankAmount);
+        bankBadgeEl.style.setProperty("--bank-chip-url", `url("${url}")`);
+    }
+
 
   function loadBank() {
     const v = localStorage.getItem(BANK_KEY);

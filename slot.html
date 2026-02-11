@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="assets/style.css">
     <link rel="stylesheet" href="assets/header-user.css">
 
+    <!--Chip Bank-->
+    <link rel="stylesheet" href="blackjack/bank-chip.css?v=dev1">
+
     <!-- Page-specific -->
     <link rel="stylesheet" href="slots/slot.css?v=dev1">
     <script src="slots/slot.js?v=dev1" defer></script>
@@ -49,7 +52,7 @@
         </section>
 
         <!-- Keep two columns; put buttons under Betting (left).
-             Right column keeps Symbol Set + Paytable in the same place. -->
+         Right column keeps Symbol Set + Paytable in the same place. -->
         <section class="grid cols-2">
             <!-- LEFT: Betting + ACTION BUTTONS -->
             <div class="panel">
@@ -89,12 +92,23 @@
                     </select>
                 </div>
 
-                <div class="mt-3 panel-subtle">
-                    <span class="muted">Paytable (3 in a row):</span>
-                    <ul class="paytable" id="paytable"><!-- JS renders this --></ul>
+                <!-- Paytable trigger + popup -->
+                <div class="pt-wrap mt-3">
+                    <button type="button" class="btn-secondary btn pt-trigger" aria-haspopup="true">
+                        Paytable
+                    </button>
+
+                    <div class="pt-pop" role="dialog" aria-label="Paytable">
+                        <div class="pt-pop-head">
+                            <strong>Paytable</strong>
+                            <span class="muted small">3 in a row</span>
+                        </div>
+                        <ul class="paytable" id="paytable"></ul>
+                    </div>
                 </div>
             </div>
         </section>
+
     </main>
 
     <footer class="footer">© Classic Slots</footer>

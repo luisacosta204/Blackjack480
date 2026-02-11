@@ -109,21 +109,6 @@ main.container.stack > .grid.cols-2 .panel {
   pointer-events: none;
 }
 
-/* Controls (chips/buttons) — consistent with Blackjack look */
-.chip-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 999px;
-  border: 0;
-  cursor: pointer;
-  font-weight: 800;
-  background: linear-gradient(180deg,#f0d77a,#caa93b);
-  box-shadow: var(--shadow-md, 0 4px 16px rgba(0,0,0,.22));
-}
-.chip-5   { filter: hue-rotate(-30deg) saturate(.8); }
-.chip-25  { filter: hue-rotate(80deg)  saturate(.9); }
-.chip-100 { filter: hue-rotate(200deg) saturate(1); }
-
 .bet-line {
   display: flex;
   gap: 10px;
@@ -200,3 +185,86 @@ main.container.stack > .grid.cols-2 .panel {
     height: 22px;
     vertical-align: middle;
 }
+
+/* --- Reduce how much the sticky controls cover the reels --- */
+main.container.stack > .grid.cols-2 {
+    padding: 12px 18px; /* smaller than current 16/24 */
+    gap: 14px;
+}
+
+
+/* Tighten paytable vertical rhythm */
+.paytable {
+    gap: 2px;
+}
+
+
+/* ===================================================== */
+/* Paytable popup (hover + focus) */
+/* ===================================================== */
+
+.pt-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.pt-trigger {
+    white-space: nowrap;
+}
+
+/* Hidden by default */
+.pt-pop {
+    position: absolute;
+    right: 0; /* align to the right edge of button */
+    bottom: calc(100% + 10px); /* pop above the sticky panel */
+    width: min(360px, 78vw);
+    max-height: 52vh;
+    overflow: auto;
+    background: rgba(10, 12, 12, 0.92);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    box-shadow: 0 16px 50px rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    padding: 12px 14px;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.pt-pop-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+}
+
+/* Show on hover OR keyboard focus within */
+.pt-wrap:hover .pt-pop,
+.pt-wrap:focus-within .pt-pop {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Small tweak so paytable items breathe in the popup */
+.pt-pop .paytable {
+    margin-top: 0;
+    gap: 6px;
+}
+
+/* === Slots only: double symbol size === */
+.reel .symbol {
+    font-size: clamp(88px, 16.4vw, 144px); /* exactly 2x your current clamp */
+}
+
+    .reel .symbol img {
+        width: 1.5em;
+        height: 1.5em;
+        object-fit: contain;
+        display: block;
+    }

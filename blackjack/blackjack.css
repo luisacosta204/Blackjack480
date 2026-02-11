@@ -182,30 +182,6 @@ main.container.stack {
             font-size: 28px;
         }
 
-/* === Chips / betting === */
-.chip-btn {
-    width: 52px;
-    height: 52px;
-    border-radius: 999px;
-    border: 0;
-    cursor: pointer;
-    font-weight: 800;
-    background: linear-gradient(180deg,#f0d77a,#caa93b);
-    box-shadow: var(--shadow-md, 0 4px 16px rgba(0,0,0,.22));
-}
-
-.chip-5 {
-    filter: hue-rotate(-30deg) saturate(0.8);
-}
-
-.chip-25 {
-    filter: hue-rotate(80deg) saturate(0.9);
-}
-
-.chip-100 {
-    filter: hue-rotate(200deg) saturate(1);
-}
-
 .bet-line {
     display: flex;
     gap: 10px;
