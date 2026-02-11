@@ -22,7 +22,7 @@ console.log('[BJ] build=dev1');
     const countInfoEl = document.getElementById('countInfo');
     const countLabelEl = document.getElementById('countLabel');
 
-    const chipButtons = document.querySelectorAll('.chip-btn');
+    const chipButtons = document.querySelectorAll('.chip-btn[data-chip]');
     const dealBtn = document.getElementById('dealBtn');
     const newRoundBtn = document.getElementById('newRoundBtn');
     const clearBetBtn = document.getElementById('clearBetBtn');
@@ -135,13 +135,15 @@ console.log('[BJ] build=dev1');
     chipButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             if (roundActive) return;
-            const add = parseInt(btn.dataset.chip, 10);
+            const add = Number(btn.dataset.chip);
+            if (!Number.isFinite(add)) return;   // prevents NaN issues forever
             if (bank <= 0) return;
             betPerHand = Math.min(bank, betPerHand + add);
             updateBetLabel();
             updateTotalWager();
         });
     });
+
     clearBetBtn.addEventListener('click', () => {
         if (roundActive) return;
         betPerHand = 0;
@@ -243,9 +245,46 @@ console.log('[BJ] build=dev1');
 
 
     function updateBankBadge() {
-        bankBadgeEl.textContent = `Bank: ${bank} chips`;
-        bankBadgeEl.className = 'badge';
+        bankBadgeEl.setAttribute("aria-label", `Bank: ${bank} chips`);
+        bankBadgeEl.textContent = String(bank);
+
+        updateChipIcon(bank); // ✅ add this
     }
+
+
+    function chipUrlForBank(bankAmount) {
+        // Change every 250 points starting at 750:
+        // 0–749 => base chip
+        // 750–999 => tier 0
+        // 1000–1249 => tier 1
+        // 1250–1499 => tier 2 ... etc.
+        if (bankAmount < 750) return "../assets/images/chip-chip.png";
+
+        const tier = Math.floor((bankAmount - 750) / 250);
+
+        // Map tiers to your images (edit filenames to match what you have)
+        const tierImages = [
+            "../assets/images/chip-750.png",   // 750–999
+            "../assets/images/chip-1000.png",  // 1000–1249
+            "../assets/images/chip-1250.png",  // 1250–1499
+            "../assets/images/chip-1500.png",  // 1500–1749
+            "../assets/images/chip-1750.png",
+            "../assets/images/chip-2000.png",
+            "../assets/images/chip-2250.png"
+        ];
+
+        // If bank exceeds defined tiers, keep the highest tier image
+        const idx = Math.min(tier, tierImages.length - 1);
+        return tierImages[idx];
+    }
+
+    function updateChipIcon(bankAmount) {
+        const url = chipUrlForBank(bankAmount);
+        // CSS var needs url("...") wrapper
+        bankBadgeEl.style.setProperty("--bank-chip-url", `url("${url}")`);
+    }
+
+
     function updateBetLabel() { betAmountEl.textContent = betPerHand; }
     function updateTotalWager() {
         const h = getHandsCount();

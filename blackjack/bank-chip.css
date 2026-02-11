@@ -1,0 +1,141 @@
+﻿/* blackjack/bank-chip.css
+   Replace the "Bank:" word visually with a poker chip icon.
+   Keep the textual content available for screen readers.
+*/
+
+/* Ensure badge uses inline-flex so icon + number align nicely */
+#bankBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;                   /* space between icon and number */
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  color: inherit;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  min-width: 64px;
+  justify-content: flex-start;
+}
+
+/* chip icon shown with ::before so we don't need to change HTML */
+    #bankBadge::before {
+        content: "";
+        display: inline-block;
+        width: 26px;
+        height: 26px;
+        flex: 0 0 26px;
+        /* ✅ JS will set --bank-chip-url */
+        background-image: var(--bank-chip-url, url('../assets/images/chip-chip.png'));
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+        transform: translateY(-1px);
+    }
+
+
+
+/* Visual-only hiding of the "Bank:" word while keeping text for screen readers:
+   we rely on the JS (see optional snippet) to put only the numeric part in the element
+   and move the full aria-label onto the element. If JS is not changed, the following
+   will remove the literal "Bank:" string visually while leaving it in the DOM for
+   assistive tech by clipping it off-screen. */
+#bankBadge .bank-visual-hide {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  white-space: nowrap !important;
+}
+
+/* Small screens: reduce icon and padding */
+@media (max-width: 560px) {
+  #bankBadge::before { width: 22px; height: 22px; flex: 0 0 22px; }
+  #bankBadge { padding: 4px 8px; font-size: 13px; min-width: 56px; }
+}
+
+
+            /*chip betting*/
+/* Shared chip-image button styling */
+.chip-btn {
+    position: relative;
+    width: 56px; /* adjust to your art */
+    height: 56px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+}
+
+/* keep original text for accessibility, but hide it visually */
+.chip-btn {
+    color: transparent; /* hides +5 text visually */
+    text-shadow: none;
+}
+
+    .chip-btn:focus-visible {
+        outline: 2px solid rgba(255,255,255,0.35);
+        outline-offset: 3px;
+    }
+
+    /* render the chip image */
+    .chip-btn::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        border-radius: 999px;
+        filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+    }
+
+    /* hover/press feedback */
+    .chip-btn:hover::before {
+        transform: translateY(-1px);
+    }
+
+    .chip-btn:active::before {
+        transform: translateY(1px) scale(0.98);
+    }
+
+    /* Per-button chip images (CORRECT selectors) */
+    .chip-btn.chip-5::before {
+        background-image: url('../assets/images/bet-5.png');
+    }
+
+    .chip-btn.chip-25::before {
+        background-image: url('../assets/images/bet-25.png');
+    }
+
+    .chip-btn.chip-100::before {
+        background-image: url('../assets/images/bet-100.png');
+    }
+
+    /* Text label on betting chips */
+    .chip-btn::after {
+        content: attr(title);
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        color: #fff; /* ✅ white text */
+        text-shadow: 0 1px 2px rgba(0,0,0,0.65), 0 0 6px rgba(0,0,0,0.35);
+        pointer-events: none;
+    }
+
+    .chip-btn::after {
+        color: #fff;
+        text-shadow: 0 1px 1px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.45);
+    }
