@@ -1,0 +1,51 @@
+/* styles/base.css — global variables and layout used across games */
+:root{
+  --bg:#0f2b23;
+  --panel: linear-gradient(180deg,#122a24 0%, #0b1f18 100%);
+  --muted: #9aa4a8;
+  --accent: #2ea871;
+  --radius: 12px;
+  --shadow-lg: 0 10px 28px rgba(0,0,0,.45);
+  --space-2:8px; --space-4:16px; --space-6:24px;
+  --border: rgba(255,255,255,.06);
+  --text: #e6efe9;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+body{background:radial-gradient(600px 300px at 20% 20%, rgba(60,120,90,.08), transparent), var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;}
+a{color:var(--accent);}
+
+/* page scaffolding */
+.header, .topbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 18px;
+  gap:12px;
+}
+.container{max-width:1200px;margin:18px auto;padding:0 14px;}
+.panel{
+  background:var(--panel);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow-lg);
+  border:1px solid var(--border);
+}
+
+/* small helpers used in craps.html */
+.stack{display:flex;flex-direction:column;min-height:100svh;}
+.grid.cols-2{display:grid;grid-template-columns:1fr;gap:18px;}
+@media(min-width:900px){ .grid.cols-2{grid-template-columns:1fr 360px} }
+
+/* generic button styles used by other games */
+.btn{padding:12px 18px;border-radius:12px;border:none;background:#2b2f31;color:var(--text);cursor:pointer;font-weight:700}
+.btn-primary{background:linear-gradient(180deg,#1e6b4f,#14573f)}
+.btn-secondary{background:linear-gradient(180deg,#2e3438,#1a1d1f)}
+
+/* small typographic */
+.h2{font-size:18px;font-weight:700;margin-bottom:6px}
+.muted{color:var(--muted);font-size:13px}
+.big{font-size:20px;font-weight:700}
+.small{font-size:12px}
+.footer{opacity:.7;padding:18px;text-align:center;font-size:13px}
